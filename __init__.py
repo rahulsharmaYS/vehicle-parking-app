@@ -12,7 +12,7 @@ from flask_migrate import Migrate
 migrate = Migrate()
 def create_app():
     app = Flask(__name__, instance_relative_config=True)
-    app.config['SECRET_KEY'] = '23f1001879_mad1_app_vehicle_parking'
+    app.config['SECRET_KEY'] = 'app_vehicle_parking'
     basedir = os.path.abspath(os.path.dirname(__file__))
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(app.instance_path, 'vehicle_parking.sqlite3')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
