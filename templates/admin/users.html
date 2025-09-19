@@ -1,0 +1,379 @@
+{% extends "base.html" %}
+
+{% block title %}Users - Admin{% endblock %}
+
+{% block content %}
+<div class="users-page">
+    <div class="users-container">
+        <div class="page-header">
+            <h1>Registered Users</h1>
+            <p>Manage users in the parking system</p>
+        </div>
+        
+        <div class="search-section">
+            <div class="search-group">
+                <input type="text" id="searchInput" placeholder="Search by name, email, or phone..." class="search-input">
+                <div class="search-icon">🔍</div>
+            </div>
+        </div>
+
+        {% if users %}
+        <div class="users-table-container">
+            <table class="users-table" id="usersTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Pincode</th>
+                        <th>Vehicle</th>
+                        <th>Bookings</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                        <tr class="user-row" 
+                            data-name="{{ user.Name|lower }}" 
+                            data-email="{{ user.Email|lower }}" 
+                            data-phone="{{ user.Phone }}">
+                            <td>{{ user.id }}</td>
+                            <td>{{ user.Name }}</td>
+                            <td>{{ user.Email }}</td>
+                            <td>{{ user.Phone }}</td>
+                            <td>{{ user.Pincode }}</td>
+                            <td>{{ user.Vehicle_Number }}</td>
+                            <td>{{ user.reservations|length }}</td>
+                            <td>
+                                    {% set last_res = user.reservations[-1] if user.reservations else None %}
+                                    {% if not user.reservations or (last_res and last_res.status == 'completed') %}
+                                    <a href="{{ url_for('admin_delete_user', user_id=user.id) }}" 
+                                       class="delete-btn"
+                                       onclick="return confirm('Delete user {{ user.Name }}?')">
+                                        Delete
+                                    </a>
+                                {% else %}
+                                    <span class="delete-btn disabled" title="Cannot delete user with bookings">
+                                        Delete
+                                    </span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            
+            <div id="noResults" class="no-results" style="display: none;">
+                <h4>No users found</h4>
+                <p>Try adjusting your search criteria</p>
+            </div>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <h4>No users registered</h4>
+            <p>Users will appear here once they register</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+.users-page {
+    background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+    min-height: 100vh;
+    padding: 2rem 0;
+}
+
+.users-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+.page-header {
+    background: rgba(36, 43, 77, 0.8);
+    backdrop-filter: blur(20px);
+    border: 1px solid #374151;
+    border-radius: 10px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    text-align: center;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.page-header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.02em;
+}
+
+.page-header p {
+    color: #b8c5d6;
+    font-size: 1rem;
+}
+
+.search-section {
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: center;
+}
+
+.search-group {
+    position: relative;
+    width: 100%;
+    max-width: 500px;
+}
+
+.search-input {
+    width: 100%;
+    padding: 1rem 1.25rem 1rem 3rem;
+    border: 2px solid #374151;
+    border-radius: 8px;
+    background: rgba(36, 43, 77, 0.8);
+    backdrop-filter: blur(20px);
+    color: #ffffff;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+    background: rgba(36, 43, 77, 0.95);
+}
+
+.search-input::placeholder {
+    color: #8b9dc3;
+}
+
+.search-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #8b9dc3;
+    font-size: 1.2rem;
+}
+
+.users-table-container {
+    background: rgba(36, 43, 77, 0.8);
+    backdrop-filter: blur(20px);
+    border: 1px solid #374151;
+    border-radius: 10px;
+    padding: 2rem;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    overflow-x: auto;
+}
+
+.users-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+}
+
+.users-table th,
+.users-table td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid #374151;
+}
+
+.users-table th {
+    background: rgba(45, 53, 97, 0.6);
+    font-weight: 600;
+    color: #ffffff;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.8rem;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.users-table td {
+    color: #b8c5d6;
+    vertical-align: middle;
+}
+
+.user-row {
+    transition: all 0.3s ease;
+    animation: fadeIn 0.3s ease;
+}
+
+.user-row:hover {
+    background: rgba(99, 102, 241, 0.1);
+    transform: scale(1.02);
+}
+
+.delete-btn {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    transition: all 0.3s ease;
+    display: inline-block;
+    text-align: center;
+}
+
+.delete-btn:hover:not(.disabled) {
+    background: linear-gradient(135deg, #dc2626, #b91c1c);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+    color: white;
+    text-decoration: none;
+}
+
+.delete-btn.disabled {
+    background: #4b5563;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.no-results,
+.empty-state {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: #b8c5d6;
+    background: rgba(36, 43, 77, 0.8);
+    backdrop-filter: blur(20px);
+    border: 1px solid #374151;
+    border-radius: 10px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.no-results h4,
+.empty-state h4 {
+    color: #ffffff;
+    margin-bottom: 1rem;
+    font-size: 1.25rem;
+}
+
+.no-results p,
+.empty-state p {
+    margin: 0;
+    opacity: 0.8;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 768px) {
+    .users-container {
+        padding: 0 1rem;
+    }
+    
+    .page-header {
+        padding: 1.5rem;
+    }
+    
+    .page-header h1 {
+        font-size: 1.5rem;
+    }
+    
+    .users-table-container {
+        padding: 1rem;
+    }
+    
+    .users-table {
+        font-size: 0.8rem;
+    }
+    
+    .users-table th,
+    .users-table td {
+        padding: 0.75rem 0.5rem;
+    }
+    
+    .search-input {
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .users-table th,
+    .users-table td {
+        padding: 0.5rem 0.25rem;
+        font-size: 0.7rem;
+    }
+    
+    .delete-btn {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.7rem;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('searchInput');
+    const userRows = document.querySelectorAll('.user-row');
+    const noResults = document.getElementById('noResults');
+    const usersTable = document.getElementById('usersTable');
+
+    function filterUsers() {
+        const searchTerm = searchInput.value.toLowerCase().trim();
+        let visibleCount = 0;
+
+        userRows.forEach(row => {
+            const name = row.dataset.name;
+            const email = row.dataset.email;
+            const phone = row.dataset.phone;
+
+            const isMatch = searchTerm === '' || 
+                          name.includes(searchTerm) || 
+                          email.includes(searchTerm) || 
+                          phone.includes(searchTerm);
+
+            if (isMatch) {
+                row.style.display = 'table-row';
+                row.style.animation = 'fadeIn 0.3s ease';
+                visibleCount++;
+            } else {
+                row.style.display = 'none';
+            }
+        });
+
+        // Show/hide no results message
+        if (visibleCount === 0 && userRows.length > 0) {
+            noResults.style.display = 'block';
+            usersTable.style.display = 'none';
+        } else {
+            noResults.style.display = 'none';
+            usersTable.style.display = 'table';
+        }
+    }
+
+    // Debounce function for better performance
+    function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+
+    // Add event listener with debouncing
+    const debouncedFilter = debounce(filterUsers, 300);
+    searchInput.addEventListener('input', debouncedFilter);
+});
+</script>
+{% endblock %}

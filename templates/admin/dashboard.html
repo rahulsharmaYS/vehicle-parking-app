@@ -1,0 +1,815 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - ParkSpace Pro{% endblock %}
+
+{% block content %}
+<div class="admin-dashboard">
+    <div class="dashboard-container">
+        <div class="dashboard-header">
+            <div class="header-content">
+                <h1>Admin Dashboard</h1>
+            </div>
+            <div class="header-actions">
+                <a href="{{ url_for('add_lot') }}" class="action-btn primary">
+                    <span class="btn-icon">+</span>
+                    Add Parking Lot
+                </a>
+            </div>
+        </div>
+
+        <div class="stats-overview">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon lots"></div>
+                    <div class="stat-content">
+                        <div class="stat-number">{{ lots|length }}</div>
+                        <div class="stat-label">Parking Lots</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon spots"></div>
+                    <div class="stat-content">
+                        <div class="stat-number">{{ total_spots }}</div>
+                        <div class="stat-label">Total Spots</div>
+                    </div>
+                </div>
+                <div class="stat-card occupied">
+                    <div class="stat-icon occupied"></div>
+                    <div class="stat-content">
+                        <div class="stat-number">{{ occupied_spots }}</div>
+                        <div class="stat-label">Occupied</div>
+                    </div>
+                </div>
+                <div class="stat-card available">
+                    <div class="stat-icon available"></div>
+                    <div class="stat-content">
+                        <div class="stat-number">{{ available_spots }}</div>
+                        <div class="stat-label">Available</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls-section">
+            <div class="search-controls">
+                <div class="search-group">
+                    <input type="text" id="searchLocation" placeholder="Search by location..." class="search-input">
+                </div>
+                <div class="search-group">
+                    <input type="text" id="searchPincode" placeholder="Search by pincode..." class="search-input">
+
+                </div>
+                <button onclick="clearFilters()" class="clear-btn">Clear</button>
+            </div>
+        </div>
+
+        <div class="lots-section">
+            <div class="section-header">
+                <h3>Parking Lots</h3>
+                <div class="results-info">
+                    <span id="resultsCount">{{ lots|length }}</span> lots found
+                </div>
+            </div>
+            
+            {% if lots %}
+                <div class="lots-container" id="lotsContainer">
+                    {% for lot in lots %}
+                        <div class="lot-card" 
+                             data-location="{{ lot.Location|lower }}" 
+                             data-pincode="{{ lot.Pincode }}"
+                             data-address="{{ lot.Address|lower }}">
+                            <div class="lot-header">
+                                <div class="lot-title">
+                                    <h4>{{ lot.Location }}</h4>
+                                    <span class="lot-id">#{{ lot.id }}</span>
+                                </div>
+                                <div class="occupancy-badge {{ 'full' if lot.occupancy_percentage >= 90 else 'moderate' if lot.occupancy_percentage >= 60 else 'low' }}">
+                                    {{ lot.occupied_spots }}/{{ lot.Max_Spots }}
+                                </div>
+                            </div>
+                            
+                            <div class="lot-details">
+                                <div class="detail-item">
+                                    <span class="label">Address</span>
+                                    <span class="value">{{ lot.Address }}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="label">Pincode</span>
+                                    <span class="value">{{ lot.Pincode }}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="label">Price</span>
+                                    <span class="value">₹{{ lot.Price }}/hour</span>
+                                </div>
+                            </div>
+                            
+                            <div class="spots-grid">
+                                {% for spot in lot.spots[:20] %}
+                                    <div class="spot {{ 'occupied' if spot.status == 'Occupied' else 'available' }}"
+                                         title="Spot {{ spot.id }} - {{ spot.status }}"></div>
+                                {% endfor %}
+                                {% if lot.spots|length > 20 %}
+                                    <div class="spot-more">+{{ lot.spots|length - 20 }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="occupancy-progress">
+                                <div class="progress-track">
+                                    <div class="progress-fill" style="width: {{ lot.occupancy_percentage }}%"></div>
+                                </div>
+                                <span class="progress-text">{{ "%.1f"|format(lot.occupancy_percentage) }}% occupied</span>
+                            </div>
+                            
+                            <div class="lot-actions">
+                                <a href="{{ url_for('admin_parking_edit', lot_id=lot.id) }}" class="action-btn edit">
+                                    Edit
+                                </a>
+                                {% if lot.occupied_spots == 0 %}
+                                    <a href="{{ url_for('admin_delete_lot', lot_id=lot.id) }}" 
+                                       class="action-btn delete"
+                                       onclick="return confirm('Are you sure you want to delete this parking lot?')">
+                                        Delete
+                                    </a>
+                                {% else %}
+                                    <span class="action-btn disabled" title="Cannot delete lot with occupied spots">
+                                        Delete
+                                    </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                
+                <div id="noResults" class="no-results" style="display: none;">
+                    <div class="no-results-icon">🔍</div>
+                    <h4>No parking lots found</h4>
+                    <p>Try adjusting your search criteria</p>
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <div class="empty-icon">🅿️</div>
+                    <h4>No parking lots found</h4>
+                    <p>Start by adding your first parking lot</p>
+                    <a href="{{ url_for('add_lot') }}" class="action-btn primary">Add Parking Lot</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.admin-dashboard {
+    min-height: 100vh;
+    background: #f8fafc;
+    padding: 2rem;
+    position: relative;
+    overflow-x: hidden;
+}
+
+.admin-dashboard::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 200px;
+    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    z-index: 1;
+}
+
+.dashboard-container {
+    position: relative;
+    z-index: 2;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0;
+}
+
+.dashboard-header {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e2e8f0;
+    animation: slideDown 0.6s ease-out;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-content h1 {
+    color: #1e293b;
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: -0.025em;
+}
+
+.action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.875rem 1.75rem;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: none;
+    cursor: pointer;
+    font-size: 0.95rem;
+    letter-spacing: 0.025em;
+}
+
+.action-btn.primary {
+    background: #3b82f6;
+    color: white;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+.action-btn.primary:hover {
+    background: #2563eb;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
+    color: white;
+    text-decoration: none;
+}
+
+.stats-overview {
+    margin-bottom: 2rem;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e2e8f0;
+    animation: slideUp 0.6s ease-out;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+}
+
+.stat-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: white;
+}
+
+.stat-icon.lots {
+    background: linear-gradient(135deg, #3b82f6, #1e40af);
+}
+
+.stat-icon.spots {
+    background: linear-gradient(135deg, #10b981, #047857);
+}
+
+.stat-icon.occupied {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+}
+
+.stat-icon.available {
+    background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #1e293b;
+}
+
+.stat-label {
+    color: #64748b;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.8rem;
+}
+
+.occupancy-overview {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e2e8f0;
+    animation: slideUp 0.6s ease-out 0.2s both;
+}
+
+.occupancy-overview h3 {
+    color: #1e293b;
+    margin-bottom: 1.5rem;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.occupancy-bar {
+    background: #e2e8f0;
+    height: 40px;
+    border-radius: 8px;
+    position: relative;
+    overflow: hidden;
+}
+
+.bar-fill {
+    background: linear-gradient(90deg, #10b981, #3b82f6, #ef4444);
+    height: 100%;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: width 1s ease;
+}
+
+.bar-label {
+    color: white;
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+.controls-section {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    animation: slideUp 0.6s ease-out 0.3s both;
+}
+
+.search-controls {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.search-input {
+    padding: 0.875rem 1rem;
+    border: 2px solid #d1d5db;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #111827;
+    font-size: 0.95rem;
+    width: 200px;
+    transition: all 0.2s ease;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.search-input:hover {
+    border-color: #9ca3af;
+}
+
+.clear-btn {
+    background: #f9fafb;
+    color: #374151;
+    border: 2px solid #d1d5db;
+    padding: 0.875rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 600;
+}
+
+.clear-btn:hover {
+    background: #f3f4f6;
+    border-color: #9ca3af;
+    transform: translateY(-1px);
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.section-header h3 {
+    color: #1e293b;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.results-info {
+    color: #64748b;
+    font-size: 0.9rem;
+}
+
+.lots-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    gap: 2rem;
+}
+
+.lot-card {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e2e8f0;
+    animation: fadeInUp 0.5s ease-out;
+}
+
+.lot-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.lot-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.lot-title h4 {
+    color: #1e293b;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.lot-id {
+    color: #64748b;
+    font-size: 0.8rem;
+}
+
+.occupancy-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.8rem;
+}
+
+.occupancy-badge.low {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.occupancy-badge.moderate {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.occupancy-badge.full {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.lot-details {
+    margin-bottom: 1.5rem;
+}
+
+.detail-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.detail-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.detail-item .label {
+    color: #64748b;
+    font-weight: 500;
+}
+
+.detail-item .value {
+    color: #1e293b;
+    font-weight: 600;
+}
+
+.spots-grid {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 4px;
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: #f8fafc;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+
+.spot {
+    aspect-ratio: 1;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.spot.available {
+    background: #10b981;
+}
+
+.spot.occupied {
+    background: #ef4444;
+}
+
+.spot:hover {
+    transform: scale(1.1);
+}
+
+.spot-more {
+    aspect-ratio: 1;
+    background: #e2e8f0;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #64748b;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.occupancy-progress {
+    margin-bottom: 1.5rem;
+}
+
+.progress-track {
+    background: #e2e8f0;
+    height: 8px;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+}
+
+.progress-fill {
+    background: linear-gradient(90deg, #10b981, #f59e0b, #ef4444);
+    height: 100%;
+    transition: width 1s ease;
+}
+
+.progress-text {
+    color: #64748b;
+    font-size: 0.8rem;
+}
+
+.lot-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.action-btn.edit {
+    background: #3b82f6;
+    color: white;
+    flex: 1;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+.action-btn.edit:hover {
+    background: #2563eb;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
+}
+
+.action-btn.delete {
+    background: #f9fafb;
+    color: #374151;
+    border: 2px solid #d1d5db;
+    flex: 1;
+}
+
+.action-btn.delete:hover {
+    background: #f3f4f6;
+    border-color: #9ca3af;
+    transform: translateY(-1px);
+}
+
+.action-btn.disabled {
+    background: #f3f4f6;
+    color: #9ca3af;
+    cursor: not-allowed;
+    flex: 1;
+    border: 2px solid #e2e8f0;
+}
+
+.no-results,
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: #64748b;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e2e8f0;
+}
+
+.no-results-icon,
+.empty-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.no-results h4,
+.empty-state h4 {
+    color: #1e293b;
+    margin-bottom: 1rem;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 768px) {
+    .admin-dashboard {
+        padding: 1rem;
+    }
+    
+    .dashboard-header {
+        flex-direction: column;
+        gap: 2rem;
+        padding: 1.5rem;
+    }
+    
+    .controls-section {
+        flex-direction: column;
+        gap: 2rem;
+        padding: 1.5rem;
+    }
+    
+    .search-controls {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .search-input {
+        width: 100%;
+    }
+    
+    .lots-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .lot-actions {
+        flex-direction: column;
+    }
+}
+</style>
+
+<script>
+// Search functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const locationSearch = document.getElementById('searchLocation');
+    const pincodeSearch = document.getElementById('searchPincode');
+    const lotCards = document.querySelectorAll('.lot-card');
+    const resultsCount = document.getElementById('resultsCount');
+    const noResults = document.getElementById('noResults');
+    const lotsContainer = document.getElementById('lotsContainer');
+
+    function filterLots() {
+        const locationQuery = locationSearch.value.toLowerCase().trim();
+        const pincodeQuery = pincodeSearch.value.toLowerCase().trim();
+        let visibleCount = 0;
+
+        lotCards.forEach(card => {
+            const location = card.dataset.location;
+            const address = card.dataset.address;
+            const pincode = card.dataset.pincode;
+
+            const locationMatch = locationQuery === '' || 
+                                location.includes(locationQuery) || 
+                                address.includes(locationQuery);
+            
+            const pincodeMatch = pincodeQuery === '' || 
+                                pincode.includes(pincodeQuery);
+
+            if (locationMatch && pincodeMatch) {
+                card.style.display = 'block';
+                card.style.animation = 'fadeIn 0.3s ease';
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+
+        // Update results count
+        resultsCount.textContent = visibleCount;
+
+        // Show/hide no results message
+        if (visibleCount === 0 && lotCards.length > 0) {
+            noResults.style.display = 'block';
+            lotsContainer.style.display = 'none';
+        } else {
+            noResults.style.display = 'none';
+            lotsContainer.style.display = 'grid';
+        }
+    }
+
+    // Debounce function for better performance
+    function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+
+    // Add event listeners with debouncing
+    const debouncedFilter = debounce(filterLots, 300);
+    locationSearch.addEventListener('input', debouncedFilter);
+    pincodeSearch.addEventListener('input', debouncedFilter);
+});
+
+function clearFilters() {
+    document.getElementById('searchLocation').value = '';
+    document.getElementById('searchPincode').value = '';
+    
+    // Show all cards
+    const lotCards = document.querySelectorAll('.lot-card');
+    lotCards.forEach(card => {
+        card.style.display = 'block';
+    });
+    
+    // Update results count
+    document.getElementById('resultsCount').textContent = lotCards.length;
+    
+    // Hide no results message
+    document.getElementById('noResults').style.display = 'none';
+    document.getElementById('lotsContainer').style.display = 'grid';
+}
+
+
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+`;
+document.head.appendChild(style);
+</script>
+{% endblock %}

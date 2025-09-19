@@ -1,0 +1,409 @@
+{% extends "base.html" %}
+
+{% block title %}Parking History - Admin{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <h1>Application Summary</h1>
+        <p>View all basic summary!</p>
+    </div>
+
+    {% if reservations %}
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">{{ reservations|length }}</div>
+                <div class="stat-label">Total Reservations</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ reservations|selectattr('status', 'eq', 'active')|list|length }}</div>
+                <div class="stat-label">Active</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ reservations|selectattr('status', 'eq', 'completed')|list|length }}</div>
+                <div class="stat-label">Completed</div>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>User</th>
+                        <th>Parking Lot</th>
+                        <th>Spot ID</th>
+                        <th>Check In</th>
+                        <th>Check Out</th>
+                        <th>Duration</th>
+                        <th>Cost</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for reservation in reservations %}
+                        <tr class="table-row-animate">
+                            <td>{{ reservation.id }}</td>
+                            <td>{{ reservation.user.Name }}</td>
+                            <td>            {% if reservation.spot and reservation.spot.lot %}
+                {{ reservation.spot.lot.Location }}
+            {% else %}
+                Unknown Lot
+            {% endif %}</td>
+                            <td>{{ reservation.spot_id }}</td>
+                            <td>{{ reservation.in_time.strftime('%Y-%m-%d %H:%M') }}</td>
+                            <td>
+                                {% if reservation.out_time_display %}
+                                    {{ reservation.out_time_display.strftime('%Y-%m-%d %H:%M') }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if reservation.duration_hours is not none and reservation.duration_hours > 0 %}
+                                    {{ reservation.duration_hours }}h
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if reservation.total_cost %}
+                                    ₹{{ "%.2f"|format(reservation.total_cost) }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="status-badge status-{{ reservation.status }}">
+                                    {{ reservation.status.title() }}
+                                </span>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="charts-section">
+            <h2>📈 Reservation Insights</h2>
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <h3>Status Breakdown</h3>
+                    <div class="chart-container">
+                        <canvas id="statusChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <h3>Monthly Reservations</h3>
+                    <div class="chart-container">
+                        <canvas id="monthlyChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <h3>Revenue Overview</h3>
+                    <div class="chart-container">
+                        <canvas id="revenueChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    {% else %}
+        <div class="empty-state">
+            <h4>Not enough data available</h4>
+            <p>Summary will appear here once users start booking</p>
+        </div>
+    {% endif %}
+</div>
+
+<style>
+.charts-section {
+    margin-top: 3rem;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.charts-section h2 {
+    color: #1f2937;
+    margin-bottom: 2rem;
+    text-align: center;
+    font-size: 1.75rem;
+    font-weight: 600;
+}
+
+.charts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+}
+
+.chart-card {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.chart-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+}
+
+.chart-card h3 {
+    color: #374151;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+.chart-container {
+    position: relative;
+    height: 300px;
+    width: 100%;
+}
+
+.chart-container canvas {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+@media (max-width: 768px) {
+    .charts-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .chart-container {
+        height: 250px;
+    }
+}
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Check if Chart.js is loaded
+    if (typeof Chart === 'undefined') {
+        console.error('Chart.js library not loaded');
+        return;
+    }
+
+    // Get chart canvas elements
+    const statusCanvas = document.getElementById('statusChart');
+    const monthlyCanvas = document.getElementById('monthlyChart');
+    const revenueCanvas = document.getElementById('revenueChart');
+
+    if (!statusCanvas || !monthlyCanvas || !revenueCanvas) {
+        console.error('Chart canvas elements not found');
+        return;
+    }
+
+    try {
+        // Process data from table
+        const rows = document.querySelectorAll(".data-table tbody tr");
+        const statusCounts = {};
+        const monthlyCounts = {};
+        const monthlyRevenue = {};
+
+        rows.forEach(row => {
+            const cells = row.querySelectorAll('td');
+            if (cells.length >= 9) {
+                const checkIn = cells[4].textContent.trim();
+                const cost = cells[7].textContent.trim();
+                const status = cells[8].querySelector('.status-badge').textContent.trim().toLowerCase();
+
+                // Count status
+                statusCounts[status] = (statusCounts[status] || 0) + 1;
+
+                // Process monthly data
+                if (checkIn && checkIn !== "-") {
+                    const date = new Date(checkIn);
+                    if (!isNaN(date)) {
+                        const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+                        const monthLabel = date.toLocaleDateString('en-US', { year: 'numeric', month: 'short' });
+                        
+                        monthlyCounts[monthLabel] = (monthlyCounts[monthLabel] || 0) + 1;
+                        
+                        // Process revenue
+                        if (cost && cost !== "-" && cost.includes('₹')) {
+                            const costValue = parseFloat(cost.replace('₹', ''));
+                            if (!isNaN(costValue)) {
+                                monthlyRevenue[monthLabel] = (monthlyRevenue[monthLabel] || 0) + costValue;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Status Chart
+        if (Object.keys(statusCounts).length > 0) {
+            const statusCtx = statusCanvas.getContext('2d');
+            new Chart(statusCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(statusCounts).map(s => s.charAt(0).toUpperCase() + s.slice(1)),
+                    datasets: [{
+                        data: Object.values(statusCounts),
+                        backgroundColor: [
+                            '#10b981',
+                            '#3b82f6',
+                            '#ef4444',
+                            '#f59e0b',
+                            '#8b5cf6'
+                        ],
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                usePointStyle: true
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Monthly Reservations Chart
+        if (Object.keys(monthlyCounts).length > 0) {
+            const monthLabels = Object.keys(monthlyCounts).sort();
+            const monthData = monthLabels.map(label => monthlyCounts[label]);
+
+            const monthlyCtx = monthlyCanvas.getContext('2d');
+            new Chart(monthlyCtx, {
+                type: 'bar',
+                data: {
+                    labels: monthLabels,
+                    datasets: [{
+                        label: 'Reservations',
+                        data: monthData,
+                        backgroundColor: '#3b82f6',
+                        borderColor: '#1d4ed8',
+                        borderWidth: 1,
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+
+        // Revenue Chart
+        if (Object.keys(monthlyRevenue).length > 0) {
+            const revenueLabels = Object.keys(monthlyRevenue).sort();
+            const revenueData = revenueLabels.map(label => monthlyRevenue[label]);
+
+            const revenueCtx = revenueCanvas.getContext('2d');
+            new Chart(revenueCtx, {
+                type: 'line',
+                data: {
+                    labels: revenueLabels,
+                    datasets: [{
+                        label: 'Revenue (₹)',
+                        data: revenueData,
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#10b981',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2,
+                        pointRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '₹' + value;
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+
+        // If no data, show placeholder charts
+        if (Object.keys(statusCounts).length === 0) {
+            showPlaceholderChart(statusCanvas, 'No status data available');
+        }
+        if (Object.keys(monthlyCounts).length === 0) {
+            showPlaceholderChart(monthlyCanvas, 'No monthly data available');
+        }
+        if (Object.keys(monthlyRevenue).length === 0) {
+            showPlaceholderChart(revenueCanvas, 'No revenue data available');
+        }
+
+    } catch (error) {
+        console.error('Error creating charts:', error);
+    }
+
+    function showPlaceholderChart(canvas, message) {
+        const ctx = canvas.getContext('2d');
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['No Data'],
+                datasets: [{
+                    data: [1],
+                    backgroundColor: ['#e5e7eb'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        enabled: false
+                    }
+                }
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

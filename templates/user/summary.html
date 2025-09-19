@@ -1,0 +1,387 @@
+{% extends "base.html" %}
+
+{% block title %}Booking History - User{% endblock %}
+
+{% block content %}
+<div class="summary-page">
+    <div class="summary-container">
+        <div class="page-header">
+            <h1>Your Booking History</h1>
+            <p>Track your parking reservations and spending</p>
+        </div>
+
+        <div class="stats-overview">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-content">
+                        <div class="stat-number">{{ total_bookings }}</div>
+                        <div class="stat-label">Total Bookings</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                <div class="stat-card">
+                    <div class="stat-content">
+                        <div class="stat-number">{{ "%.1f"|format(total_hours) }}h</div>
+                        <div class="stat-label">Total Hours</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-content">
+                        <div class="stat-number">₹{{ "%.2f"|format(total_spent) }}</div>
+                        <div class="stat-label">Total Spent</div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        {% if reservations %}
+        <div class="history-table-section">
+            <div class="section-header">
+                <h2>Booking Details</h2>
+            </div>
+            
+            <div class="table-wrapper">
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th>Parking Location</th>
+                            <th>Booked</th>
+                            <th>Check Out</th>
+                            <th>Duration</th>
+                            <th>Cost</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for reservation in reservations %}
+                            <tr class="history-row">
+                                <td>
+                                    <div class="location-info">
+                                        <strong>                            <td>            {% if reservation.spot and reservation.spot.lot %}
+                {{ reservation.spot.lot.Location }}
+            {% else %}
+                Unknown Lot
+            {% endif %}</strong>
+                                        <small>                            <td>            {% if reservation.spot and reservation.spot.lot %}
+                {{ reservation.spot.lot.Address }}
+            {% else %}
+                Unknown Lot
+            {% endif %}</small>
+                                    </div>
+                                </td>
+                                <td>{{ reservation.in_time.strftime('%d %b %Y, %H:%M') }}</td>
+                                <td>
+                                    {% if reservation.out_time_display %}
+                                        {{ reservation.out_time_display.strftime('%d %b %Y, %H:%M') }}
+                                    {% else %}
+                                        <span class="active-text">Still active</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                {% if reservation.duration_hours is not none and reservation.duration_hours > 0 %}
+                                        {{ reservation.duration_hours }} hours
+                                    {% else %}
+                                        <span class="pending-text">In progress</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if reservation.total_cost %}
+                                        <strong class="cost-value">₹{{ "%.2f"|format(reservation.total_cost) }}</strong>
+                                    {% else %}
+                                        <span class="pending-text">Calculating...</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="status-badge {{ 'active' if reservation.status == 'active' else 'completed' }}">
+                                        {{ reservation.status.title() }}
+                                    </span>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <h3>Start booking your parking spots to see your history</h3>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+.summary-page {
+    background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+    min-height: 100vh;
+    padding: 2rem 0;
+}
+
+.summary-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+.page-header {
+    background: rgba(36, 43, 77, 0.8);
+    backdrop-filter: blur(20px);
+    border: 1px solid #374151;
+    border-radius: 20px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    text-align: center;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.page-header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.02em;
+}
+
+.page-header p {
+    color: #b8c5d6;
+    font-size: 1rem;
+}
+
+.stats-overview {
+    margin-bottom: 3rem;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.stat-card {
+    background: rgba(36, 43, 77, 0.8);
+    backdrop-filter: blur(20px);
+    border: 1px solid #374151;
+    border-radius: 20px;
+    padding: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    border-color: #6366f1;
+}
+
+.stat-icon {
+    font-size: 2.5rem;
+    opacity: 0.8;
+}
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #6366f1;
+    margin-bottom: 0.25rem;
+}
+
+.stat-label {
+    color: #8b9dc3;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 0.8rem;
+}
+
+.history-table-section {
+    background: rgba(36, 43, 77, 0.8);
+    backdrop-filter: blur(20px);
+    border: 1px solid #374151;
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.section-header {
+    margin-bottom: 2rem;
+}
+
+.section-header h2 {
+    color: #ffffff;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.table-wrapper {
+    overflow-x: auto;
+    border-radius: 12px;
+    border: 1px solid #374151;
+}
+
+.history-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: rgba(45, 53, 97, 0.6);
+}
+
+.history-table th,
+.history-table td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid #374151;
+}
+
+.history-table th {
+    background: rgba(36, 43, 77, 0.8);
+    font-weight: 600;
+    color: #ffffff;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.8rem;
+}
+
+.history-table td {
+    color: #b8c5d6;
+}
+
+.history-row {
+    transition: all 0.3s ease;
+}
+
+.history-row:hover {
+    background: rgba(99, 102, 241, 0.1);
+}
+
+.location-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.location-info strong {
+    color: #ffffff;
+    font-weight: 600;
+}
+
+.location-info small {
+    color: #8b9dc3;
+    font-size: 0.8rem;
+}
+
+.active-text {
+    color: #10b981;
+    font-weight: 600;
+}
+
+.pending-text {
+    color: #f59e0b;
+    font-style: italic;
+}
+
+.cost-value {
+    color: #6366f1;
+    font-weight: 700;
+}
+
+.status-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-badge.active {
+    background: rgba(16, 185, 129, 0.2);
+    color: #10b981;
+}
+
+.status-badge.completed {
+    background: rgba(99, 102, 241, 0.2);
+    color: #6366f1;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: rgba(36, 43, 77, 0.8);
+    backdrop-filter: blur(20px);
+    border: 1px solid #374151;
+    border-radius: 20px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.empty-icon {
+    font-size: 4rem;
+    margin-bottom: 1.5rem;
+    opacity: 0.5;
+}
+
+.empty-state h3 {
+    color: #ffffff;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+}
+
+.empty-state p {
+    color: #8b9dc3;
+    margin: 0;
+}
+
+@media (max-width: 768px) {
+    .summary-container {
+        padding: 0 1rem;
+    }
+    
+    .page-header {
+        padding: 1.5rem;
+    }
+    
+    .page-header h1 {
+        font-size: 1.5rem;
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .stat-card {
+        padding: 1.5rem;
+    }
+    
+    .history-table-section {
+        padding: 1.5rem;
+    }
+    
+    .history-table th,
+    .history-table td {
+        padding: 0.75rem 0.5rem;
+        font-size: 0.8rem;
+    }
+    
+    .location-info {
+        min-width: 150px;
+    }
+}
+
+@media (max-width: 480px) {
+    .history-table th,
+    .history-table td {
+        padding: 0.5rem 0.25rem;
+        font-size: 0.7rem;
+    }
+    
+    .stat-number {
+        font-size: 1.5rem;
+    }
+    
+    .stat-icon {
+        font-size: 2rem;
+    }
+}
+</style>
+{% endblock %}

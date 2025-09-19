@@ -1,0 +1,883 @@
+{% extends "base.html" %}
+
+{% block title %}Documentation - ParkSpace Pro{% endblock %}
+
+{% block content %}
+<div class="docs-page">
+    <div class="docs-container">
+        <div class="docs-sidebar">
+            <div class="sidebar-nav">
+                <h3>Documentation</h3>
+                <ul class="nav-menu">
+                    <li><a href="#getting-started" class="nav-link active">Getting Started</a></li>
+                    <li><a href="#api-reference" class="nav-link">API Reference</a></li>
+                    <li><a href="#user-guide" class="nav-link">User Guide</a></li>
+                    <li><a href="#admin-guide" class="nav-link">Admin Guide</a></li>
+                    <li><a href="#integrations" class="nav-link">Integrations</a></li>
+                    <li><a href="#troubleshooting" class="nav-link">Troubleshooting</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="docs-content">
+            <div class="docs-header">
+                <h1>ParkSpace Pro Documentation</h1>
+                <p>Complete guide to implementing and using our parking management system</p>
+                <div class="version-badge">v2.1.0</div>
+            </div>
+
+            <section id="getting-started" class="doc-section">
+                <h2>Getting Started</h2>
+                <p>Welcome to ParkSpace Pro! This guide will help you set up and configure your parking management system.</p>
+                
+                <div class="code-example">
+                    <div class="code-header">
+                        <span>Installation</span>
+                        <button class="copy-btn" onclick="copyCode('install-code')">Copy</button>
+                    </div>
+                    <pre id="install-code"><code>git clone https://github.com/will_update_once_i_complete_this_project.git
+cd parking-system
+pip install -r req.txt
+python app.py</code></pre>
+                </div>
+
+                <h3>System Requirements</h3>
+                <div class="requirements-grid">
+                    <div class="req-item">
+                        <div class="req-icon server"></div>
+                        <div class="req-content">
+                            <h4>Server</h4>
+                            <p>Python, Flask , SQLite</p>
+                        </div>
+                    </div>
+                    <div class="req-item">
+                        <div class="req-icon browser"></div>
+                        <div class="req-content">
+                            <h4>Browser</h4>
+                            <p>Edge, Brave, Chrome, Firefox, Safari</p>
+                        </div>
+                    </div>
+                    <div class="req-item">
+                        <div class="req-icon mobile"></div>
+                        <div class="req-content">
+                            <h4>Mobile</h4>
+                            <p>Android, ios</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="api-reference" class="doc-section">
+                <h2>API Reference (Below is just an example)</h2>
+                <p>RESTful API endpoints for integrating with ParkSpace Pro.</p>
+
+                <div class="api-endpoint">
+                    <div class="endpoint-header">
+                        <span class="method get">GET</span>
+                        <span class="endpoint-url">/api/v1/lots</span>
+                    </div>
+                    <div class="endpoint-content">
+                        <p>Retrieve all parking lots with availability status.</p>
+                        <h4>Parameters</h4>
+                        <div class="params-table">
+                            <div class="param-row">
+                                <span class="param-name">location</span>
+                                <span class="param-type">string</span>
+                                <span class="param-desc">Filter by location name</span>
+                            </div>
+                            <div class="param-row">
+                                <span class="param-name">available</span>
+                                <span class="param-type">boolean</span>
+                                <span class="param-desc">Filter by availability</span>
+                            </div>
+                        </div>
+                        
+                        <h4>Response</h4>
+                        <div class="code-example">
+                            <pre><code>{
+  "status": "success",
+  "data": [
+    {
+      "id": 1,
+      "location": "Downtown Center",
+      "available_spots": 23,
+      "total_spots": 100,
+      "price_per_hour": 40.00
+    }
+  ]
+}</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="api-endpoint">
+                    <div class="endpoint-header">
+                        <span class="method post">POST</span>
+                        <span class="endpoint-url">/api/v1/reservations</span>
+                    </div>
+                    <div class="endpoint-content">
+                        <p>Create a new parking reservation.</p>
+                        <h4>Request Body</h4>
+                        <div class="code-example">
+                            <pre><code>{
+  "lot_id": 1,
+  "user_id": 123,
+  "duration_hours": 2,
+  "vehicle_number": "DL01AB1234"
+}</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="user-guide" class="doc-section">
+                <h2>User Guide</h2>
+                <p>Step-by-step instructions for end users.</p>
+
+                <div class="guide-steps">
+                    <div class="step-item">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h3>Account Registration</h3>
+                            <p>Create your account by providing basic information and vehicle details. Verify your email address to activate your account.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="step-item">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h3>Find Parking</h3>
+                            <p>Use the location search or map view to find available parking spots near your destination. Filter by price, distance, and amenities.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="step-item">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h3>Make Reservation</h3>
+                            <p>Select your preferred parking spot, choose duration, and complete the payment process. Receive instant confirmation with QR code.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="step-item">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h3>Access Parking</h3>
+                            <p>Navigate to the parking location using GPS directions. Scan the QR code at the entrance to gain access to your reserved spot.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="admin-guide" class="doc-section">
+                <h2>Admin Guide</h2>
+                <p>Administration and management features for parking operators.</p>
+
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon lots"></div>
+                        <h3>Lot Management</h3>
+                        <p>Create and configure parking lots, set pricing, manage capacity, and monitor real-time occupancy.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon users"></div>
+                        <h3>User Management</h3>
+                        <p>View user profiles, manage accounts, handle disputes, and generate user activity reports.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon analytics"></div>
+                        <h3>Analytics Dashboard</h3>
+                        <p>Access comprehensive reports on revenue, occupancy rates, peak hours, and operational metrics.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon settings"></div>
+                        <h3>System Settings</h3>
+                        <p>Configure system parameters, payment gateways, notification settings, and integration options.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="integrations" class="doc-section">
+                <h2>Integrations</h2>
+                <p>Connect ParkSpace Pro with third-party services and hardware.</p>
+
+                <div class="integration-list">
+                    <div class="integration-item">
+                        <div class="integration-logo payment"></div>
+                        <div class="integration-content">
+                            <h3>Payment Gateways</h3>
+                            <p>Integrated support for Stripe, PayPal, Razorpay, and other major payment processors.</p>
+                            <div class="integration-tags">
+                                <span class="tag">Stripe</span>
+                                <span class="tag">PayPal</span>
+                                <span class="tag">Razorpay</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="integration-item">
+                        <div class="integration-logo maps"></div>
+                        <div class="integration-content">
+                            <h3>Mapping Services</h3>
+                            <p>Real-time navigation and location services powered by Google Maps and OpenStreetMap.</p>
+                            <div class="integration-tags">
+                                <span class="tag">Google Maps</span>
+                                <span class="tag">OpenStreetMap</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="integration-item">
+                        <div class="integration-logo iot"></div>
+                        <div class="integration-content">
+                            <h3>IoT Sensors</h3>
+                            <p>Compatible with various parking sensors, gate controllers, and access management systems.</p>
+                            <div class="integration-tags">
+                                <span class="tag">Wireless Sensors</span>
+                                <span class="tag">RFID</span>
+                                <span class="tag">Cameras</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="troubleshooting" class="doc-section">
+                <h2>Troubleshooting</h2>
+                <p>Common issues and their solutions.</p>
+
+                <div class="faq-list">
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <h3>Unable to make payment</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Check your internet connection and ensure your payment method is valid. Clear browser cache and try again. Contact support if the issue persists.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <h3>QR code not scanning</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Ensure adequate lighting and clean camera lens. Hold the device steady and at appropriate distance. Use the manual entry option if QR scanning fails.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <h3>Parking spot showing as occupied</h3>
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Sensor data may take up to 5 minutes to update. If the spot remains unavailable, contact the parking facility directly or choose an alternative spot.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+
+<style>
+.docs-page {
+    background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+    min-height: 100vh;
+    color: #ffffff;
+}
+
+.docs-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    min-height: 100vh;
+}
+
+.docs-sidebar {
+    background: rgba(36, 43, 77, 0.8);
+    backdrop-filter: blur(20px);
+    border-right: 1px solid #374151;
+    padding: 2rem;
+    position: sticky;
+    top: 70px;
+    height: calc(100vh - 70px);
+    overflow-y: auto;
+}
+
+.sidebar-nav h3 {
+    color: #ffffff;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    font-size: 1.2rem;
+}
+
+.nav-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.nav-menu li {
+    margin-bottom: 0.5rem;
+}
+
+.nav-link {
+    display: block;
+    color: #b8c5d6;
+    text-decoration: none;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.nav-link:hover,
+.nav-link.active {
+    background: #6366f1;
+    color: white;
+    text-decoration: none;
+}
+
+.docs-content {
+    padding: 2rem 3rem;
+    overflow-y: auto;
+}
+
+.docs-header {
+    margin-bottom: 3rem;
+    position: relative;
+}
+
+.docs-header h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 1rem;
+    letter-spacing: -0.02em;
+}
+
+.docs-header p {
+    font-size: 1.2rem;
+    color: #b8c5d6;
+    margin-bottom: 1.5rem;
+}
+
+.version-badge {
+    display: inline-block;
+    background: #6366f1;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.doc-section {
+    margin-bottom: 4rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid #374151;
+}
+
+.doc-section:last-child {
+    border-bottom: none;
+}
+
+.doc-section h2 {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #ffffff;
+    margin-bottom: 1rem;
+    scroll-margin-top: 90px;
+}
+
+.doc-section h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #ffffff;
+    margin: 2rem 0 1rem 0;
+}
+
+.doc-section p {
+    color: #b8c5d6;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+}
+
+.code-example {
+    background: #1a1f3a;
+    border: 1px solid #374151;
+    border-radius: 12px;
+    margin: 1.5rem 0;
+    overflow: hidden;
+}
+
+.code-header {
+    background: #242b4d;
+    padding: 0.75rem 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #374151;
+}
+
+.code-header span {
+    color: #b8c5d6;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.copy-btn {
+    background: #6366f1;
+    color: white;
+    border: none;
+    padding: 0.25rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.copy-btn:hover {
+    background: #5856eb;
+}
+
+.code-example pre {
+    padding: 1.5rem;
+    margin: 0;
+    overflow-x: auto;
+}
+
+.code-example code {
+    color: #e5e7eb;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.requirements-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+}
+
+.req-item {
+    display: flex;
+    gap: 1rem;
+    padding: 1.5rem;
+    background: rgba(36, 43, 77, 0.6);
+    border: 1px solid #374151;
+    border-radius: 12px;
+}
+
+.req-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.req-icon.server {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+}
+
+.req-icon.browser {
+    background: linear-gradient(135deg, #10b981, #06b6d4);
+}
+
+.req-icon.mobile {
+    background: linear-gradient(135deg, #f59e0b, #f97316);
+}
+
+.req-content h4 {
+    color: #ffffff;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.req-content p {
+    color: #b8c5d6;
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+.api-endpoint {
+    background: rgba(36, 43, 77, 0.6);
+    border: 1px solid #374151;
+    border-radius: 12px;
+    margin: 1.5rem 0;
+    overflow: hidden;
+}
+
+.endpoint-header {
+    background: #242b4d;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.method {
+    padding: 0.25rem 0.75rem;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+}
+
+.method.get {
+    background: #10b981;
+    color: white;
+}
+
+.method.post {
+    background: #6366f1;
+    color: white;
+}
+
+.endpoint-url {
+    color: #ffffff;
+    font-family: 'Courier New', monospace;
+    font-weight: 500;
+}
+
+.endpoint-content {
+    padding: 1.5rem;
+}
+
+.endpoint-content h4 {
+    color: #ffffff;
+    font-weight: 600;
+    margin: 1.5rem 0 1rem 0;
+}
+
+.params-table {
+    background: #1a1f3a;
+    border-radius: 8px;
+    padding: 1rem;
+    margin: 1rem 0;
+}
+
+.param-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 2fr;
+    gap: 1rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #374151;
+}
+
+.param-row:last-child {
+    border-bottom: none;
+}
+
+.param-name {
+    color: #6366f1;
+    font-family: 'Courier New', monospace;
+    font-weight: 500;
+}
+
+.param-type {
+    color: #10b981;
+    font-size: 0.9rem;
+}
+
+.param-desc {
+    color: #b8c5d6;
+    font-size: 0.9rem;
+}
+
+.guide-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    margin: 2rem 0;
+}
+
+.step-item {
+    display: flex;
+    gap: 1.5rem;
+    align-items: flex-start;
+}
+
+.step-number {
+    width: 40px;
+    height: 40px;
+    background: #6366f1;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.step-content h3 {
+    color: #ffffff;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.step-content p {
+    color: #b8c5d6;
+    margin: 0;
+}
+
+.feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin: 2rem 0;
+}
+
+.feature-card {
+    background: rgba(36, 43, 77, 0.6);
+    border: 1px solid #374151;
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    border-color: #6366f1;
+}
+
+.feature-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    margin: 0 auto 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.feature-icon.lots {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+}
+
+.feature-icon.users {
+    background: linear-gradient(135deg, #10b981, #06b6d4);
+}
+
+.feature-icon.analytics {
+    background: linear-gradient(135deg, #f59e0b, #f97316);
+}
+
+.feature-icon.settings {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+}
+
+.integration-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    margin: 2rem 0;
+}
+
+.integration-item {
+    display: flex;
+    gap: 1.5rem;
+    padding: 2rem;
+    background: rgba(36, 43, 77, 0.6);
+    border: 1px solid #374151;
+    border-radius: 12px;
+}
+
+.integration-logo {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    flex-shrink: 0;
+}
+
+.integration-logo.payment {
+    background: linear-gradient(135deg, #10b981, #06b6d4);
+}
+
+.integration-logo.maps {
+    background: linear-gradient(135deg, #f59e0b, #f97316);
+}
+
+.integration-logo.iot {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+}
+
+.integration-content h3 {
+    color: #ffffff;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.integration-content p {
+    color: #b8c5d6;
+    margin-bottom: 1rem;
+}
+
+.integration-tags {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.tag {
+    background: rgba(99, 102, 241, 0.2);
+    color: #6366f1;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.faq-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin: 2rem 0;
+}
+
+.faq-item {
+    background: rgba(36, 43, 77, 0.6);
+    border: 1px solid #374151;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.faq-question {
+    padding: 1.5rem;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.faq-question:hover {
+    background: rgba(99, 102, 241, 0.1);
+}
+
+.faq-question h3 {
+    color: #ffffff;
+    font-weight: 600;
+    margin: 0;
+    font-size: 1.1rem;
+}
+
+.faq-toggle {
+    color: #6366f1;
+    font-size: 1.5rem;
+    font-weight: 300;
+}
+
+.faq-answer {
+    padding: 0 1.5rem 1.5rem;
+    display: none;
+}
+
+.faq-answer p {
+    color: #b8c5d6;
+    margin: 0;
+    line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+    .docs-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .docs-sidebar {
+        position: static;
+        height: auto;
+        border-right: none;
+        border-bottom: 1px solid #374151;
+    }
+    
+    .docs-content {
+        padding: 2rem 1rem;
+    }
+    
+    .docs-header h1 {
+        font-size: 2rem;
+    }
+    
+    .param-row {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+    
+    .step-item {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+</style>
+
+<script>
+function copyCode(elementId) {
+    const codeElement = document.getElementById(elementId);
+    const text = codeElement.textContent;
+    navigator.clipboard.writeText(text).then(() => {
+        const btn = event.target;
+        const originalText = btn.textContent;
+        btn.textContent = 'Copied!';
+        setTimeout(() => {
+            btn.textContent = originalText;
+        }, 2000);
+    });
+}
+
+// FAQ toggle functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const faqQuestions = document.querySelectorAll('.faq-question');
+    
+    faqQuestions.forEach(question => {
+        question.addEventListener('click', function() {
+            const answer = this.nextElementSibling;
+            const toggle = this.querySelector('.faq-toggle');
+            
+            if (answer.style.display === 'block') {
+                answer.style.display = 'none';
+                toggle.textContent = '+';
+            } else {
+                answer.style.display = 'block';
+                toggle.textContent = '-';
+            }
+        });
+    });
+    
+    // Smooth scrolling for navigation links
+    const navLinks = document.querySelectorAll('.nav-link');
+    
+    navLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href');
+            const targetElement = document.querySelector(targetId);
+            
+            if (targetElement) {
+                targetElement.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+                
+                // Update active nav link
+                navLinks.forEach(l => l.classList.remove('active'));
+                this.classList.add('active');
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

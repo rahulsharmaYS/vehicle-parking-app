@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}ParkSpace Pro{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../static/main.css">
+    <link rel="stylesheet" href="../static/key.css">
+    <link rel="stylesheet" href="../static/base.css">
+    <link rel="stylesheet" href="../static/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+
+    <style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+    color: #e5e7eb;
+    min-height: 100vh;
+    line-height: 1.6;
+}
+
+/* SIDEBAR NAVIGATION */
+.sidebar-nav {
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    width: 80px;
+    background: rgba(16, 24, 40, 0.95);
+    backdrop-filter: blur(20px);
+    border-right: 1px solid #334155;
+    z-index: 1000;
+    overflow: hidden;
+    transition: width 0.3s ease;
+    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.3);
+}
+
+.sidebar-nav:hover {
+    width: 280px;
+}
+
+.sidebar-header {
+    display: flex;
+    align-items: center;
+    padding: 1.5rem 1rem;
+    height: 80px;
+    border-bottom: 1px solid #334155;
+}
+
+.brand-icon {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, #10a37f, #14b8a6);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: white;
+    flex-shrink: 0;
+}
+
+.brand-text {
+    margin-left: 1rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: white;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.3s ease 0.1s;
+}
+
+.sidebar-nav:hover .brand-text {
+    opacity: 1;
+}
+
+.nav-menu {
+    padding: 2rem 0;
+}
+
+.nav-section {
+    margin-bottom: 2rem;
+}
+
+.nav-section-title {
+    color: #94a3b8;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 0 1rem;
+    margin-bottom: 1rem;
+    opacity: 0;
+    transition: opacity 0.3s ease 0.1s;
+}
+
+.sidebar-nav:hover .nav-section-title {
+    opacity: 1;
+}
+
+.nav-item {
+    margin-bottom: 0.5rem;
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    margin: 0 1rem;
+    font-weight: 500;
+    font-size: 0.95rem;
+    color: #cbd5e1;
+    border-radius: 12px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.nav-link::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 4px;
+    height: 100%;
+    background: #10a37f;
+    transform: scaleY(0);
+    transition: transform 0.3s ease;
+}
+
+.nav-link:hover {
+    background: rgba(16, 163, 127, 0.1);
+    color: #ffffff;
+    transform: translateX(4px);
+}
+
+.nav-link:hover::before {
+    transform: scaleY(1);
+}
+
+.nav-link.active {
+    background: rgba(16, 163, 127, 0.2);
+    color: #ffffff;
+    border-left: 4px solid #10a37f;
+}
+
+.nav-link.logout-btn {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    margin-top: 2rem;
+}
+
+.nav-link.logout-btn:hover {
+    background: rgba(239, 68, 68, 0.2);
+    color: white;
+}
+
+.nav-icon {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 1.2rem;
+}
+
+.nav-text {
+    margin-left: 1rem;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.3s ease 0.1s;
+}
+
+.sidebar-nav:hover .nav-text {
+    opacity: 1;
+}
+
+/* MAIN CONTENT & FOOTER */
+.main-content,
+.site-footer {
+    margin-left: 80px;
+    transition: margin-left 0.3s ease;
+    min-height: 100vh;
+}
+
+.site-footer {
+    background: #111827;
+    border-top: 1px solid #334155;
+    padding: 2.5rem 2rem 1.5rem;
+}
+
+.footer-container {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.footer-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.footer-section h4 {
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.footer-section a,
+.footer-section p {
+    color: #94a3b8;
+    text-decoration: none;
+    margin-bottom: 0.5rem;
+    display: block;
+    transition: color 0.3s ease;
+}
+
+.footer-section a:hover {
+    color: white;
+}
+
+.footer-bottom {
+    text-align: center;
+    padding-top: 2rem;
+    border-top: 1px solid #334155;
+}
+
+.footer-bottom p {
+    color: #64748b;
+    margin-bottom: 0.5rem;
+}
+
+.developer-info {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.github-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: white;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.github-link:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-1px);
+}
+
+/* NOTIFICATIONS */
+.notification-area {
+    position: fixed;
+    top: 2rem;
+    right: 2rem;
+    max-width: 400px;
+    z-index: 2000;
+    width: 100%;
+}
+
+.alert-message {
+    background: rgba(30, 41, 59, 0.95);
+    border: 1px solid #334155;
+    backdrop-filter: blur(20px);
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 0.75rem;
+    color: white;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    position: relative;
+    animation: slideInRight 0.5s ease;
+}
+
+.alert-message::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 4px;
+    height: 100%;
+    background: #10a37f;
+}
+
+.alert-message.success::before { background: #10b981; }
+.alert-message.error::before { background: #ef4444; }
+.alert-message.warning::before { background: #f59e0b; }
+.alert-message.info::before { background: #06b6d4; }
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+    </style>
+</head>
+<body>
+    <div class="mobile-overlay" id="mobileOverlay"></div>
+    <button class="mobile-toggle" id="mobileToggle">☰</button>
+
+    <nav class="sidebar-nav" id="sidebarNav">
+        <div class="sidebar-header">
+            <div class="brand-icon">P</div>
+            <a href="{{ url_for('index') }}" class="brand-text">ParkSpace Pro</a>
+        </div>
+        
+        <div class="nav-menu">
+            {% if session.admin_logged_in %}
+                <div class="nav-section">
+                    <div class="nav-section-title">Admin Panel</div>
+                    <div class="nav-item">
+                        <a href="{{ url_for('admin_dashboard') }}" class="nav-link">
+                            <div class="nav-icon">📊</div>
+                            <span class="nav-text">Dashboard</span>
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a href="{{ url_for('admin_users') }}" class="nav-link">
+                            <div class="nav-icon">👥</div>
+                            <span class="nav-text">Users Management</span>
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a href="{{ url_for('admin_summary') }}" class="nav-link">
+                            <div class="nav-icon">📈</div>
+                            <span class="nav-text">Summary</span>
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a href="{{ url_for('admin_logout') }}" class="nav-link logout-btn">
+                            <div class="nav-icon">🚪</div>
+                            <span class="nav-text">Logout</span>
+                        </a>
+                    </div>
+                </div>
+            {% elif session.user_id %}
+                <div class="nav-section">
+                    <div class="nav-section-title">User Panel</div>
+                    <div class="nav-item">
+                        <a href="{{ url_for('user_dashboard') }}" class="nav-link">
+                            <div class="nav-icon">🏠</div>
+                            <span class="nav-text">Dashboard</span>
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a href="{{ url_for('user_profile') }}" class="nav-link">
+                            <div class="nav-icon">👤</div>
+                            <span class="nav-text">Profile</span>
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a href="{{ url_for('user_summary') }}" class="nav-link">
+                            <div class="nav-icon">📋</div>
+                            <span class="nav-text">Summary</span>
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a href="{{ url_for('contact') }}" class="nav-link">
+                            <div class="nav-icon">📞</div>
+                            <span class="nav-text">Contact</span>
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a href="{{ url_for('user_logout') }}" class="nav-link logout-btn">
+                            <div class="nav-icon">🚪</div>
+                            <span class="nav-text">Logout</span>
+                        </a>
+                    </div>
+                </div>
+            {% else %}
+                <div class="nav-section">
+                    <div class="nav-section-title">Authentication</div>
+                    <div class="nav-item">
+                        <a href="{{ url_for('admin_login') }}" class="nav-link">
+                            <div class="nav-icon">🔐</div>
+                            <span class="nav-text">Admin Login</span>
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a href="{{ url_for('user_login') }}" class="nav-link">
+                            <div class="nav-icon">🔑</div>
+                            <span class="nav-text">User Login</span>
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </nav>
+
+    <div class="notification-area">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert-message {{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="site-footer">
+        <div class="footer-container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><a href="{{ url_for('index') }}">ParkSpace Pro</a></h4>
+                    <p>Modern parking management solution for efficient space utilization and seamless user experience.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <a href="{{ url_for('index') }}">Home</a>
+                    <a href="{{ url_for('admin_login') }}">Admin Portal</a>
+                    <a href="{{ url_for('user_login') }}">User Dashboard</a>
+                </div>
+                <div class="footer-section">
+                    <h4>Support</h4>
+                    <a href="{{ url_for('docs')}}">Documentation</a>
+                    <a href="{{ url_for('about') }}">About</a>
+                    <a href="{{ url_for('contact') }}">Contact Support</a>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2025 ParkSpace Pro. All rights reserved.</p>
+                <div class="developer-info">
+                    <span>Developed by Rahul Sharma</span>
+                    <a href="https://github.com/rahulsharmaYS" class="github-link">
+                        <span>GitHub Profile</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile menu functionality
+        const mobileToggle = document.getElementById('mobileToggle');
+        const sidebarNav = document.getElementById('sidebarNav');
+        const mobileOverlay = document.getElementById('mobileOverlay');
+
+        function toggleMobileMenu() {
+            sidebarNav.classList.toggle('mobile-open');
+            mobileOverlay.classList.toggle('active');
+        }
+
+        mobileToggle.addEventListener('click', toggleMobileMenu);
+        mobileOverlay.addEventListener('click', toggleMobileMenu);
+
+        // Auto-hide notifications
+        document.addEventListener('DOMContentLoaded', function() {
+            const alerts = document.querySelectorAll('.alert-message');
+            alerts.forEach(alert => {
+                setTimeout(() => {
+                    alert.style.animation = 'slideInRight 0.3s reverse';
+                    setTimeout(() => alert.remove(), 300);
+                }, 5000);
+            });
+        });
+
+        // Set active navigation link
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentPath = window.location.pathname;
+            const navLinks = document.querySelectorAll('.nav-link');
+            
+            navLinks.forEach(link => {
+                if (link.getAttribute('href') === currentPath) {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+        // Close mobile menu on window resize
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 768) {
+                sidebarNav.classList.remove('mobile-open');
+                mobileOverlay.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>

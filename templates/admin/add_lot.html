@@ -1,0 +1,339 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+{% block content %}
+<style>
+    * {
+        box-sizing: border-box;
+    }
+    
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        margin: 0;
+        padding: 0;
+    }
+    
+    .app-container {
+        min-height: 100vh;
+        background: #f8fafc;
+        padding: 2rem;
+        position: relative;
+        overflow-x: hidden;
+    }
+    
+    .app-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 200px;
+        background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+        z-index: 1;
+    }
+    
+    .content-wrapper {
+        position: relative;
+        z-index: 2;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    
+    .page-header {
+        background: white;
+        border-radius: 16px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        border: 1px solid #e2e8f0;
+        animation: slideDown 0.6s ease-out;
+    }
+    
+    .page-header h1 {
+        color: #1e293b;
+        font-size: 1.75rem;
+        font-weight: 700;
+        margin: 0 0 0.5rem 0;
+        letter-spacing: -0.025em;
+    }
+    
+    .page-header p {
+        color: #64748b;
+        font-size: 1rem;
+        margin: 0;
+        line-height: 1.5;
+    }
+    
+    .form-container {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        border: 1px solid #e2e8f0;
+        overflow: hidden;
+        animation: slideUp 0.6s ease-out 0.2s both;
+    }
+    
+    .form-header {
+        background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+        padding: 2rem;
+        color: white;
+    }
+    
+    .form-header h2 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin: 0 0 0.5rem 0;
+        letter-spacing: -0.025em;
+    }
+    
+    .form-header p {
+        opacity: 0.9;
+        margin: 0;
+        font-size: 0.95rem;
+    }
+    
+    .form-body {
+        padding: 2.5rem;
+    }
+    
+    .input-group {
+        margin-bottom: 1.75rem;
+        animation: fadeInUp 0.5s ease-out;
+    }
+    
+    .input-group:nth-child(1) { animation-delay: 0.1s; }
+    .input-group:nth-child(2) { animation-delay: 0.2s; }
+    .input-group:nth-child(3) { animation-delay: 0.3s; }
+    .input-group:nth-child(4) { animation-delay: 0.4s; }
+    
+    .input-label {
+        display: block;
+        color: #374151;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+        font-size: 0.875rem;
+        letter-spacing: 0.025em;
+    }
+    
+    .input-field {
+        width: 100%;
+        padding: 0.875rem 1rem;
+        border: 2px solid #d1d5db;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: all 0.2s ease;
+        background: #ffffff;
+        color: #111827;
+    }
+    
+    .input-field:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    
+    .input-field:hover {
+        border-color: #9ca3af;
+    }
+    
+    .input-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        margin-bottom: 1.75rem;
+    }
+    
+    .input-help {
+        color: #6b7280;
+        font-size: 0.8rem;
+        margin-top: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .input-help::before {
+        content: '';
+        width: 4px;
+        height: 4px;
+        background: #3b82f6;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+    
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2.5rem;
+        padding-top: 2rem;
+        border-top: 1px solid #e5e7eb;
+    }
+    
+    .btn {
+        padding: 0.875rem 1.75rem;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        text-decoration: none;
+        text-align: center;
+        cursor: pointer;
+        border: none;
+        transition: all 0.2s ease;
+        position: relative;
+        flex: 1;
+        min-height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        letter-spacing: 0.025em;
+    }
+    
+    .btn-primary {
+        background: #3b82f6;
+        color: white;
+        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    }
+    
+    .btn-primary:hover {
+        background: #2563eb;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        transform: translateY(-1px);
+    }
+    
+    .btn-primary:active {
+        transform: translateY(0);
+        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    }
+    
+    .btn-secondary {
+        background: #f9fafb;
+        color: #374151;
+        border: 2px solid #d1d5db;
+    }
+    
+    .btn-secondary:hover {
+        background: #f3f4f6;
+        border-color: #9ca3af;
+        transform: translateY(-1px);
+    }
+    
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .app-container {
+            padding: 1rem;
+        }
+        
+        .page-header,
+        .form-body {
+            padding: 1.5rem;
+        }
+        
+        .form-header {
+            padding: 1.5rem;
+        }
+        
+        .input-row {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+        
+        .action-buttons {
+            flex-direction: column;
+        }
+    }
+</style>
+
+<div class="app-container">
+    <div class="content-wrapper">
+        <div class="page-header">
+            <h1>Parking Management System</h1>
+            <p>Manage parking lots and configure parking spaces efficiently</p>
+        </div>
+        
+        <div class="form-container">
+            <div class="form-header">
+                <h2>Create New Parking Lot</h2>
+                <p>Add a new parking facility to the system</p>
+            </div>
+            
+            <div class="form-body">
+                <form method="POST">
+                    <div class="input-group">
+                        <label class="input-label" for="Location">Location Name</label>
+                        <input type="text" id="Location" name="Location" class="input-field" required 
+                               placeholder="Enter nearby landmark or area name" maxlength="200">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label class="input-label" for="Address">Full Address</label>
+                        <textarea id="Address" name="Address" class="input-field" required 
+                                  placeholder="Enter complete address with street, city details" rows="3"></textarea>
+                    </div>
+                    
+                    <div class="input-row">
+                        <div class="input-group">
+                            <label class="input-label" for="Pincode">Postal Code</label>
+                            <input type="text" id="Pincode" name="Pincode" class="input-field" required 
+                                   placeholder="000000" pattern="[0-9]{5,6}" maxlength="6">
+                        </div>
+                        
+                        <div class="input-group">
+                            <label class="input-label" for="Price">Hourly Rate (₹)</label>
+                            <input type="number" id="Price" name="Price" class="input-field" required 
+                                   placeholder="0.00" min="1" max="1000" step="0.01">
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label class="input-label" for="Max_Spots">Total Parking Spaces</label>
+                        <input type="number" id="Max_Spots" name="Max_Spots" class="input-field" required 
+                               placeholder="Enter number of parking spaces" min="1" max="200" step="1">
+                        <div class="input-help">Individual parking spots will be automatically generated</div>
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label" for="Max_Time">Maximum Parking Duration (minutes)</label>
+                        <input type="number" id="Max_Time" name="Max_Time" class="input-field" required 
+                               placeholder="Enter maximum parking duration" min="1" max="1440" step="1">
+                    </div>
+
+                    <div class="action-buttons">
+                        <button type="submit" class="btn btn-primary">Create Parking Lot</button>
+                        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

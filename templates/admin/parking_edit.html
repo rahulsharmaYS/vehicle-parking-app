@@ -1,0 +1,349 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Parking Lot - Admin{% endblock %}
+
+{% block content %}
+<div class="edit-lot-page">
+    <div class="edit-container">
+        <div class="page-header">
+            <h1>Edit Parking Lot</h1>
+            <p>Update parking lot information and settings</p>
+        </div>
+        
+        <div class="form-card">
+            <form method="POST" class="edit-form">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="location_name">Location Name</label>
+                        <input type="text" id="location_name" name="Location" required 
+                               value="{{ lot.Location }}" maxlength="200"
+                               placeholder="Enter location name">
+                    </div>
+                    
+                    <div class="form-group full-width">
+                        <label for="address">Address</label>
+                        <textarea id="address" name="Address" required rows="3"
+                                  placeholder="Enter complete address">{{ lot.Address }}</textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="pincode">Pincode</label>
+                        <input type="text" id="pincode" name="Pincode" required 
+                               value="{{ lot.Pincode }}" pattern="[0-9]{5,6}" maxlength="6"
+                               placeholder="000000">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="price">Price per Hour (₹)</label>
+                        <input type="number" id="price" name="Price" required 
+                               value="{{ lot.Price }}" min="1" max="1000" step="0.01"
+                               placeholder="0.00">
+                    </div>
+
+                    <!-- max spots change -->
+                    <div class="form-group">
+                        <label for="max_spots">Maximum Spots</label>
+                        <input type="number" id="max_spots" name="Max_Spots" required 
+                               value="{{ lot.Max_Spots }}" min="1" max="1000"
+                               placeholder="1-1000">
+                    </div>
+                </div>
+                
+                <div class="info-section">
+                    <h3>Current Status</h3>
+                    <div class="status-grid">
+                        <div class="status-item">
+                            <span class="status-label">Total Spots</span>
+                            <span class="status-value">{{ lot.Max_Spots }}</span>
+                        </div>
+                        <div class="status-item">
+                            <span class="status-label">Occupied</span>
+                            <span class="status-value occupied">{{ lot.occupied_spots }}</span>
+                        </div>
+                        <div class="status-item">
+                            <span class="status-label">Available</span>
+                            <span class="status-value available">{{ lot.available_spots }}</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="action-btn primary">Update</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+.edit-lot-page {
+    background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+    min-height: 100vh;
+    padding: 2rem 0;
+}
+
+.edit-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+.page-header {
+    background: rgba(36, 43, 77, 0.8);
+    backdrop-filter: blur(20px);
+    border: 1px solid #374151;
+    border-radius: 20px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    text-align: center;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.page-header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.02em;
+}
+
+.page-header p {
+    color: #b8c5d6;
+    font-size: 1rem;
+}
+
+.form-card {
+    background: rgba(36, 43, 77, 0.8);
+    backdrop-filter: blur(20px);
+    border: 1px solid #374151;
+    border-radius: 20px;
+    padding: 2.5rem;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.edit-form {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group.full-width {
+    grid-column: 1 / -1;
+}
+
+.form-group label {
+    color: #ffffff;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    font-size: 0.9rem;
+    letter-spacing: 0.02em;
+}
+
+.form-group input,
+.form-group textarea {
+    padding: 1rem 1.25rem;
+    border: 2px solid #374151;
+    border-radius: 12px;
+    background: rgba(45, 53, 97, 0.6);
+    color: #ffffff;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+    background: rgba(45, 53, 97, 0.8);
+    transform: translateY(-1px);
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+    color: #8b9dc3;
+    opacity: 0.8;
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.info-section {
+    background: rgba(45, 53, 97, 0.6);
+    border-radius: 16px;
+    padding: 2rem;
+    border: 1px solid #374151;
+}
+
+.info-section h3 {
+    color: #ffffff;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+}
+
+.status-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.status-item {
+    background: rgba(36, 43, 77, 0.8);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    border: 1px solid #374151;
+}
+
+.status-label {
+    display: block;
+    color: #8b9dc3;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.5rem;
+}
+
+.status-value {
+    display: block;
+    color: #ffffff;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.status-value.occupied {
+    color: #ef4444;
+}
+
+.status-value.available {
+    color: #10b981;
+}
+
+.info-note {
+    text-align: center;
+    padding: 1rem;
+    background: rgba(245, 158, 11, 0.1);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    border-radius: 8px;
+}
+
+.info-note span {
+    color: #f59e0b;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+.action-btn {
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    min-width: 180px;
+    text-align: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: 0.02em;
+}
+
+.action-btn.primary {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: white;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+}
+
+.action-btn.primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.6);
+    filter: brightness(1.1);
+}
+
+.action-btn.secondary {
+    background: transparent;
+    color: #6366f1;
+    border: 2px solid #6366f1;
+}
+
+.action-btn.secondary:hover {
+    background: #6366f1;
+    color: white;
+    transform: translateY(-2px);
+    text-decoration: none;
+}
+
+@media (max-width: 768px) {
+    .edit-container {
+        padding: 0 1rem;
+    }
+    
+    .form-card {
+        padding: 2rem;
+    }
+    
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .status-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .page-header {
+        padding: 1.5rem;
+    }
+    
+    .page-header h1 {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .form-card {
+        padding: 1.5rem;
+    }
+    
+    .info-section {
+        padding: 1.5rem;
+    }
+    
+    .status-item {
+        padding: 1rem;
+    }
+    
+    .status-value {
+        font-size: 1.25rem;
+    }
+}
+</style>
+{% endblock %}

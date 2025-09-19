@@ -1,0 +1,365 @@
+{% extends "base.html" %}
+
+{% block title %}Contact Us - ParkSpace Pro{% endblock %}
+
+{% block content %}
+<div class="contact-page">
+    <div class="contact-container">
+        <div class="contact-header">
+            <h1>Get in Touch</h1>
+            <p>Have questions about our parking solutions? We're here to help.</p>
+        </div>
+
+        <div class="contact-content">
+            <div class="contact-form-section">
+                <div class="form-card">
+                    <h2>Send us a Message</h2>
+                    <form class="contact-form" method="POST">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="Name">Name</label>
+                                <input type="text" id="Name" name="Name" required>
+                            </div>
+
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="phone">Phone Number</label>
+                            <input type="tel" id="phone" name="phone">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="subject">Subject</label>
+                            <select id="subject" name="subject" required>
+                                <option value="">Select a topic</option>
+                                <option value="general">General Inquiry</option>
+                                <option value="technical">Technical Support</option>
+                                <option value="billing">Billing Question</option>
+                                <option value="partnership">Partnership Opportunity</option>
+                                <option value="feedback">Feedback</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="message">Message</label>
+                            <textarea id="message" name="message" rows="5" placeholder="Tell us how we can help you..." required></textarea>
+                        </div>
+
+                        <button type="submit" class="submit-btn">Send Message</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="contact-info-section">
+                <div class="info-card">
+                    <h3>Contact Information</h3>
+                    <div class="contact-details">
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <div class="icon-circle email-icon"></div>
+                            </div>
+                            <div class="contact-text">
+                                <h4>Email</h4>
+                                <p><u>dummysupport@parkspacepro.com</u></p>
+                                <p><u>dummysales@parkspacepro.com</u></p>
+                            </div>
+                        </div>
+
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <div class="icon-circle phone-icon"></div>
+                            </div>
+                            <div class="contact-text">
+                                <h4>Phone</h4>
+                                <p>+91 0987654321</p>
+                                <p>+91 1234567890</p>
+                            </div>
+                        </div>
+
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <div class="icon-circle location-icon"></div>
+                            </div>
+                            <div class="contact-text">
+                                <h4>Office</h4>
+                                <p>Tech Park, Sector 21</p>
+                                <p>Delhi 110001</p>
+                            </div>
+                        </div>
+
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <div class="icon-circle time-icon"></div>
+                            </div>
+                            <div class="contact-text">
+                                <h4>Support Hours</h4>
+                                <p>Monday - Friday: 9:00 AM - 6:00 PM</p>
+                                <p>Emergency Support: 24/7</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <h3>Quick Links</h3>
+                    <div class="quick-links">
+                        <a href="{{ url_for('docs') }}" class="quick-link">Documentation</a>
+                        <a href="{{ url_for('about') }}" class="quick-link">About Us</a>
+                        <a href="{{ url_for('contact') }}" class="quick-link">Contact Support</a>
+                        <a href="{{ url_for('user_login') }}" class="quick-link">User Login</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.contact-page {
+    background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+    min-height: 100vh;
+    padding: 2rem 0;
+}
+
+.contact-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+.contact-header {
+    text-align: center;
+    margin-bottom: 4rem;
+}
+
+.contact-header h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 1rem;
+    letter-spacing: -0.02em;
+}
+
+.contact-header p {
+    font-size: 1.2rem;
+    color: #b8c5d6;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.contact-content {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 3rem;
+}
+
+.form-card,
+.info-card {
+    background: rgba(36, 43, 77, 0.8);
+    backdrop-filter: blur(20px);
+    border: 1px solid #374151;
+    border-radius: 20px;
+    padding: 2.5rem;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.form-card h2,
+.info-card h3 {
+    color: #ffffff;
+    font-weight: 600;
+    margin-bottom: 2rem;
+    font-size: 1.5rem;
+}
+
+.contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    color: #ffffff;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    padding: 1rem;
+    border: 2px solid #374151;
+    border-radius: 12px;
+    background: rgba(45, 53, 97, 0.6);
+    color: #ffffff;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    resize: vertical;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+    background: rgba(45, 53, 97, 0.8);
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+    color: #8b9dc3;
+}
+
+.submit-btn {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    margin-top: 1rem;
+}
+
+.submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+    filter: brightness(1.1);
+}
+
+.contact-details {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.contact-item {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+}
+
+.contact-icon {
+    flex-shrink: 0;
+}
+
+.icon-circle {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.email-icon {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+}
+
+.phone-icon {
+    background: linear-gradient(135deg, #10b981, #06b6d4);
+}
+
+.location-icon {
+    background: linear-gradient(135deg, #f59e0b, #f97316);
+}
+
+.time-icon {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+}
+
+.contact-text h4 {
+    color: #ffffff;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+}
+
+.contact-text p {
+    color: #b8c5d6;
+    margin-bottom: 0.25rem;
+    line-height: 1.5;
+}
+
+.quick-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.quick-link {
+    color: #b8c5d6;
+    text-decoration: none;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.quick-link:hover {
+    color: #ffffff;
+    background: rgba(99, 102, 241, 0.2);
+    transform: translateX(5px);
+    text-decoration: none;
+}
+
+@media (max-width: 768px) {
+    .contact-content {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+
+    .contact-header h1 {
+        font-size: 2.5rem;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .form-card,
+    .info-card {
+        padding: 2rem;
+    }
+
+    .contact-container {
+        padding: 0 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .contact-header h1 {
+        font-size: 2rem;
+    }
+
+    .form-card,
+    .info-card {
+        padding: 1.5rem;
+    }
+
+    .contact-item {
+        flex-direction: column;
+        text-align: center;
+        gap: 0.5rem;
+    }
+}
+</style>
+{% endblock %}

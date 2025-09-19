@@ -1,0 +1,698 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - ParkSpace Pro{% endblock %}
+
+{% block content %}
+<div class="user-dashboard">
+    <div class="dashboard-container">
+        <div class="welcome-section">
+            <div class="welcome-content">
+                <div class="user-avatar">
+                    <span>{{ session.user_name[0].upper() }}</span>
+                </div>
+                <div class="welcome-text">
+                    <h1>Welcome back, {{ session.user_name }}!</h1>
+                    <p>Manage your parking reservations and find available spots</p>
+                </div>
+            </div>
+            <div class="quick-actions">
+                <a href="{{ url_for('user_profile') }}" class="action-btn profile-btn">
+                    <span class="btn-icon">👤</span>
+                    <span>Profile</span>
+                </a>
+            </div>
+        </div>
+
+        {% if active_reservations %}
+        <div class="active-section">
+            <div class="section-header">
+                <h2>Active Reservations</h2>
+                <span class="reservation-count">{{ active_reservations|length }}</span>
+            </div>
+            
+            <div class="reservations-container">
+                {% for reservation in active_reservations %}
+                <div class="reservation-card">
+                    <div class="card-status">
+                        <div class="status-indicator active"></div>
+                        <span class="status-text">Active</span>
+                    </div>
+                    
+                    <div class="reservation-details">
+                        <h3>{{ reservation.spot.lot.Location }}</h3>
+                        <div class="detail-grid">
+                            <div class="detail-item">
+                                <span class="label">Location</span>
+                                <span class="value">{{ reservation.spot.lot.Address }}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">Spot ID</span>
+                                <span class="value">#{{ reservation.spot_id }}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">Check-in Time</span>
+                                <span class="value">{{ reservation.in_time.strftime('%d %b, %H:%M') }}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">Rate</span>
+                                <span class="value">₹{{ reservation.spot.lot.Price }}/hour</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="reservation-actions">
+                        <form method="POST" action="{{ url_for('user_release_spot', reservation_id=reservation.id) }}" class="release-form">
+                            <button type="submit" class="release-btn" onclick="return confirm('Are you sure you want to release this parking spot?')">
+                                Release Spot
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="parking-section" id="parking-lots">
+            <div class="section-header">
+                <h2>Available Parking Lots</h2>
+            </div>
+            
+            {% if nearby_lots %}
+            <div class="lots-container">
+                {% for lot in nearby_lots %}
+                <div class="parking-lot-card" data-available="{{ lot.spots|selectattr('status', 'equalto', 'A')|list|length }}">
+                    <div class="lot-header">
+                        <div class="lot-title">
+                            <h3>{{ lot.Location }}</h3>
+                        </div>
+                        <div class="availability-badge {{ 'available' if lot.available_spots > 10 else 'limited' if lot.available_spots > 0 else 'full' }}">
+                            <span class="count">{{ lot.available_spots }}</span>
+                            <span class="text">Available</span>
+                        </div>
+                    </div>
+                    
+                    <div class="lot-details">
+                        <div class="location-info">
+                            <span class="address">{{ lot.Address }}</span>
+                            <span class="pincode">{{ lot.Pincode }}</span>
+                        </div>
+                        
+                        <div class="pricing-info">
+                            <span class="price">₹{{ lot.Price }}</span>
+                            <span class="unit">/hour</span>
+                        </div>
+                    </div>
+                    
+                    <div class="occupancy-bar">
+                        <div class="bar-fill" style="width: {{ (100 - (lot.available_spots / lot.Max_Spots * 100))|round }}%"></div>
+                        <span class="occupancy-text">{{ ((lot.Max_Spots - lot.available_spots) / lot.Max_Spots * 100)|round }}% occupied</span>
+
+                    </div>
+                    
+                    <div class="lot-actions">
+                        {% if lot.spots|selectattr('status', 'equalto', 'A')|list|length > 0 %}
+                        <a href="{{ url_for('user_book_spot', lot_id=lot.id) }}" class="book-btn">
+                            <span>Book Now</span>
+                            <span class="btn-arrow">→</span>
+                        </a>
+                        {% else %}
+                        <button class="book-btn disabled" disabled>
+                            <span>Fully Occupied</span>
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">🅿️</div>
+                <h3>No Parking Lots Available</h3>
+                <p>All parking lots in your area are currently at capacity. We'll notify you when spots become available.</p>
+                <button class="refresh-btn" onclick="location.reload()">Refresh</button>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+.user-dashboard {
+    background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+    min-height: 100vh;
+    padding: 2rem 0;
+}
+
+.dashboard-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+.welcome-section {
+    background: rgba(36, 43, 77, 0.8);
+    backdrop-filter: blur(20px);
+    border: 1px solid #374151;
+    border-radius: 24px;
+    padding: 2rem;
+    margin-bottom: 3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.welcome-content {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.user-avatar {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: 700;
+    color: white;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+}
+
+.welcome-text h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.02em;
+}
+
+.welcome-text p {
+    color: #b8c5d6;
+    font-size: 1.1rem;
+}
+
+.quick-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.action-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    background: rgba(99, 102, 241, 0.1);
+    border: 2px solid #6366f1;
+    border-radius: 16px;
+    color: #6366f1;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    min-width: 100px;
+}
+
+.action-btn:hover {
+    background: #6366f1;
+    color: white;
+    transform: translateY(-2px);
+    text-decoration: none;
+}
+
+.btn-icon {
+    font-size: 1.5rem;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.section-header h2 {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+.reservation-count {
+    background: #6366f1;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 600;
+}
+
+.active-section {
+    margin-bottom: 3rem;
+}
+
+.reservations-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    gap: 2rem;
+}
+
+.reservation-card {
+    background: rgba(36, 43, 77, 0.8);
+    backdrop-filter: blur(20px);
+    border: 1px solid #374151;
+    border-radius: 20px;
+    padding: 2rem;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.reservation-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #10b981, #06b6d4);
+}
+
+.reservation-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+}
+
+.card-status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.status-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #10b981;
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+    animation: pulse 2s infinite;
+}
+
+.status-text {
+    color: #10b981;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+}
+
+.reservation-details h3 {
+    color: #ffffff;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    font-size: 1.25rem;
+}
+
+.detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.detail-item .label {
+    color: #8b9dc3;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.detail-item .value {
+    color: #ffffff;
+    font-weight: 600;
+}
+
+.release-btn {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+.release-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(239, 68, 68, 0.4);
+}
+
+.filter-controls {
+    display: flex;
+    gap: 0.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 0.5rem;
+    border-radius: 12px;
+}
+
+.filter-btn {
+    padding: 0.5rem 1rem;
+    background: transparent;
+    border: none;
+    color: #b8c5d6;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.filter-btn.active,
+.filter-btn:hover {
+    background: #6366f1;
+    color: white;
+}
+
+.lots-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 2rem;
+}
+
+.parking-lot-card {
+    background: rgba(36, 43, 77, 0.8);
+    backdrop-filter: blur(20px);
+    border: 1px solid #374151;
+    border-radius: 20px;
+    padding: 2rem;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.parking-lot-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+    border-color: #6366f1;
+}
+
+.lot-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1.5rem;
+}
+
+.lot-title h3 {
+    color: #ffffff;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.lot-type {
+    color: #8b9dc3;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.availability-badge {
+    text-align: center;
+    padding: 0.75rem;
+    border-radius: 12px;
+    min-width: 80px;
+}
+
+.availability-badge.available {
+    background: rgba(16, 185, 129, 0.2);
+    color: #10b981;
+}
+
+.availability-badge.limited {
+    background: rgba(245, 158, 11, 0.2);
+    color: #f59e0b;
+}
+
+.availability-badge.full {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+}
+
+.availability-badge .count {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.availability-badge .text {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.lot-details {
+    margin-bottom: 1.5rem;
+}
+
+.location-info {
+    margin-bottom: 1rem;
+}
+
+.address {
+    display: block;
+    color: #ffffff;
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+}
+
+.pincode {
+    color: #8b9dc3;
+    font-size: 0.9rem;
+}
+
+.pricing-info {
+    display: flex;
+    align-items: baseline;
+    gap: 0.25rem;
+}
+
+.price {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #6366f1;
+}
+
+.unit {
+    color: #8b9dc3;
+}
+
+.occupancy-bar {
+    background: #374151;
+    height: 8px;
+    border-radius: 4px;
+    position: relative;
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+}
+
+.bar-fill {
+    background: linear-gradient(90deg, #ef4444, #f59e0b);
+    height: 100%;
+    border-radius: 4px;
+    transition: width 1s ease;
+}
+
+.occupancy-text {
+    position: absolute;
+    top: -1.5rem;
+    right: 0;
+    font-size: 0.8rem;
+    color: #8b9dc3;
+}
+
+.lot-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.book-btn {
+    flex: 1;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: white;
+    text-decoration: none;
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    font-weight: 600;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.book-btn:hover:not(.disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+    color: white;
+    text-decoration: none;
+}
+
+.book-btn.disabled {
+    background: #4b5563;
+    cursor: not-allowed;
+}
+
+.info-btn {
+    background: transparent;
+    color: #6366f1;
+    border: 2px solid #6366f1;
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.info-btn:hover {
+    background: #6366f1;
+    color: white;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: #b8c5d6;
+}
+
+.empty-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+.empty-state h3 {
+    color: #ffffff;
+    margin-bottom: 1rem;
+}
+
+.refresh-btn {
+    background: #6366f1;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 1rem;
+    transition: all 0.3s ease;
+}
+
+.refresh-btn:hover {
+    background: #5856eb;
+    transform: translateY(-2px);
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+@media (max-width: 768px) {
+    .welcome-section {
+        flex-direction: column;
+        gap: 2rem;
+        text-align: center;
+    }
+    
+    .quick-actions {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .reservations-container,
+    .lots-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .section-header {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: flex-start;
+    }
+    
+    .detail-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .lot-actions {
+        flex-direction: column;
+    }
+}
+</style>
+
+<script>
+function filterLots(type) {
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    const lotCards = document.querySelectorAll('.parking-lot-card');
+    
+    filterBtns.forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+    
+    lotCards.forEach(card => {
+        const available = parseInt(card.dataset.available);
+        let show = true;
+        
+        switch(type) {
+            case 'nearby':
+                show = true; // In a real app, you'd filter by distance
+                break;
+            case 'premium':
+                show = available > 15; // Show lots with more than 15 spots
+                break;
+            case 'all':
+            default:
+                show = true;
+                break;
+        }
+        
+        card.style.display = show ? 'block' : 'none';
+    });
+}
+
+function showLotDetails(lotId) {
+    // In a real app, this would show a modal with detailed lot information
+    alert(`Showing details for parking lot ${lotId}`);
+}
+
+// Auto-refresh every 2 minutes
+setInterval(() => {
+    const refreshIndicator = document.createElement('div');
+    refreshIndicator.textContent = 'Updating...';
+    refreshIndicator.style.cssText = `
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #6366f1;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        z-index: 1000;
+        font-size: 0.8rem;
+    `;
+    document.body.appendChild(refreshIndicator);
+    
+    setTimeout(() => {
+        location.reload();
+    }, 1000);
+}, 120000);
+</script>
+{% endblock %}

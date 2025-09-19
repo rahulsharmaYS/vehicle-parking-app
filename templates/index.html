@@ -1,0 +1,515 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="hero-landing">
+    <div class="hero-container">
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1 class="hero-heading">Smart Parking Solutions for Urban Mobility</h1>
+                <p class="hero-description">Reserve, pay, and navigate to your parking spot seamlessly. Real-time availability across the city.</p>
+                <div class="hero-actions">
+                    <a href="{{ url_for('user_login') }}" class="cta-button primary">Find Parking Now</a>
+                    <a href="{{ url_for('admin_login') }}" class="cta-button secondary">Management Portal</a>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="parking-grid-demo">
+                    <div class="parking-spot available"></div>
+                    <div class="parking-spot occupied"></div>
+                    <div class="parking-spot available"></div>
+                    <div class="parking-spot reserved"></div>
+                    <div class="parking-spot available"></div>
+                    <div class="parking-spot occupied"></div>
+                    <div class="parking-spot available"></div>
+                    <div class="parking-spot available"></div>
+                    <div class="parking-spot occupied"></div>
+                    <div class="parking-spot available"></div>
+                </div>
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color available"></div>
+                        <span>Available</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color occupied"></div>
+                        <span>Occupied</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color reserved"></div>
+                        <span>Reserved</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="stats-overview">
+    <div class="stats-container">
+        <div class="stat-item">
+            <div class="stat-number">99,450</div>
+            <div class="stat-label">Total Parking Spots</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">18,823</div>
+            <div class="stat-label">Active Users</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">77%</div>
+            <div class="stat-label">Average Occupancy</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">24/7</div>
+            <div class="stat-label">System Availability</div>
+        </div>
+    </div>
+</section>
+
+<section class="features-showcase">
+    <div class="features-container">
+        <div class="section-header">
+            <h2>Why Choose ParkSpace Pro</h2>
+            <p>Advanced parking management with intelligent automation</p>
+        </div>
+        
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <div class="icon-bg real-time"></div>
+                </div>
+                <h3>Real-Time Monitoring</h3>
+                <p>Live parking availability updates with sensor integration and automated spot detection.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <div class="icon-bg mobile"></div>
+                </div>
+                <h3>Mobile Integration</h3>
+                <p>Book and pay through mobile app with GPS navigation to your reserved parking spot.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <div class="icon-bg analytics"></div>
+                </div>
+                <h3>Analytics Dashboard</h3>
+                <p>Comprehensive reporting on usage patterns, revenue tracking, and operational insights.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <div class="icon-bg security"></div>
+                </div>
+                <h3>Security & Access</h3>
+                <p>Automated gate control with license plate recognition and user authentication.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="parking-locations">
+    <div class="locations-container">
+        <div class="section-header">
+            <h2>Premium Parking Locations</h2>
+            <p>Strategically located parking facilities across major business districts</p>
+        </div>
+        
+        <div class="locations-grid">
+            <div class="location-card">
+                <div class="location-header">
+                    <h4>Downtown Business Center</h4>
+                    <div class="availability-badge available">87 spots available</div>
+                </div>
+                <div class="location-details">
+                    <div class="detail-item">
+                        <span class="label">Rate:</span>
+                        <span class="value">₹40/hour</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="label">Distance:</span>
+                        <span class="value">2.1 km away</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="label">Features:</span>
+                        <span class="value">Covered, Security, EV Charging</span>
+                    </div>
+                </div>
+                <div class="location-actions">
+                    <button class="reserve-btn">Reserve Now</button>
+                    <button class="directions-btn">Get Directions</button>
+                </div>
+            </div>
+            
+            <div class="location-card">
+                <div class="location-header">
+                    <h4>Shopping Mall Complex</h4>
+                    <div class="availability-badge limited">23 spots available</div>
+                </div>
+                <div class="location-details">
+                    <div class="detail-item">
+                        <span class="label">Rate:</span>
+                        <span class="value">₹35/hour</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="label">Distance:</span>
+                        <span class="value">1.8 km away</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="label">Features:</span>
+                        <span class="value">Underground, Valet Service</span>
+                    </div>
+                </div>
+                <div class="location-actions">
+                    <button class="reserve-btn">Reserve Now</button>
+                    <button class="directions-btn">Get Directions</button>
+                </div>
+            </div>
+            
+            <div class="location-card">
+                <div class="location-header">
+                    <h4>Airport Terminal Hub</h4>
+                    <div class="availability-badge full">Waiting list only</div>
+                </div>
+                <div class="location-details">
+                    <div class="detail-item">
+                        <span class="label">Rate:</span>
+                        <span class="value">₹60/hour</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="label">Distance:</span>
+                        <span class="value">8.5 km away</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="label">Features:</span>
+                        <span class="value">Long-term, Shuttle Service</span>
+                    </div>
+                </div>
+                <div class="location-actions">
+                    <button class="reserve-btn disabled">Join Waitlist</button>
+                    <button class="directions-btn">Get Directions</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+body {
+    background: #1e1e2f;
+    color: #e5e7eb;
+    font-family: 'Inter', sans-serif;
+}
+
+.hero-landing {
+    background: linear-gradient(135deg, #1e1e2f 0%, #131825 100%);
+    padding: 4rem 2rem;
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-landing::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: radial-gradient(circle at 30% 20%, rgba(16, 163, 127, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 70% 80%, rgba(20, 184, 166, 0.1) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+.hero-heading {
+    font-size: 3.5rem;
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+    background: linear-gradient(135deg, #ffffff 0%, #9ca3af 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.02em;
+}
+
+.hero-description {
+    font-size: 1.25rem;
+    color: #9ca3af;
+    margin-bottom: 2.5rem;
+    line-height: 1.6;
+}
+
+.hero-actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.cta-button {
+    padding: 1rem 2rem;
+    font-weight: 600;
+    text-decoration: none;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+    min-width: 180px;
+    text-align: center;
+}
+
+.cta-button.primary {
+    background: linear-gradient(135deg, #10a37f, #14b8a6);
+    color: white;
+    box-shadow: 0 8px 25px rgba(16, 163, 127, 0.4);
+}
+
+.cta-button.primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 35px rgba(16, 163, 127, 0.6);
+}
+
+.cta-button.secondary {
+    background: transparent;
+    color: #10a37f;
+    border: 2px solid #10a37f;
+}
+
+.cta-button.secondary:hover {
+    background: #10a37f;
+    color: white;
+    transform: translateY(-3px);
+}
+
+/* PARKING GRID */
+.parking-grid-demo {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding: 2rem;
+    background: rgba(42, 42, 64, 0.6);
+    border-radius: 20px;
+    backdrop-filter: blur(20px);
+}
+
+.parking-spot {
+    aspect-ratio: 1;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.parking-spot.available {
+    background: #10b981;
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+}
+
+.parking-spot.occupied {
+    background: #ef4444;
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
+}
+
+.parking-spot.reserved {
+    background: #f59e0b;
+    box-shadow: 0 0 20px rgba(245, 158, 11, 0.3);
+}
+
+/* LEGEND */
+.legend {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #9ca3af;
+}
+
+.legend-color {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+}
+
+/* STATS SECTION */
+.stats-overview {
+    background: #232338;
+    padding: 3rem 2rem;
+    border-top: 1px solid #374151;
+    border-bottom: 1px solid #374151;
+}
+
+.stat-number {
+    font-size: 3rem;
+    font-weight: 800;
+    color: #10a37f;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.02em;
+}
+
+.stat-label {
+    color: #9ca3af;
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    letter-spacing: 0.1em;
+}
+
+/* FEATURES */
+.features-showcase {
+    padding: 5rem 2rem;
+    background: #1e1e2f;
+}
+
+.feature-card {
+    background: rgba(42, 42, 64, 0.8);
+    backdrop-filter: blur(20px);
+    border: 1px solid #374151;
+    border-radius: 20px;
+    padding: 2.5rem;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    border-color: #10a37f;
+}
+
+.icon-bg.real-time {
+    background: linear-gradient(135deg, #10b981, #14b8a6);
+}
+
+.icon-bg.mobile {
+    background: linear-gradient(135deg, #10a37f, #14b8a6);
+}
+
+.icon-bg.analytics {
+    background: linear-gradient(135deg, #f59e0b, #f97316);
+}
+
+.icon-bg.security {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+}
+
+/* LOCATIONS */
+.parking-locations {
+    background: #18182b;
+    padding: 5rem 2rem;
+    border-top: 1px solid #374151;
+}
+
+.location-card {
+    background: rgba(42, 42, 64, 0.8);
+    backdrop-filter: blur(20px);
+    border: 1px solid #374151;
+    border-radius: 20px;
+    padding: 2rem;
+    transition: all 0.3s ease;
+}
+
+.location-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+}
+
+.availability-badge.available {
+    background: rgba(16, 185, 129, 0.2);
+    color: #10b981;
+}
+
+.availability-badge.limited {
+    background: rgba(245, 158, 11, 0.2);
+    color: #f59e0b;
+}
+
+.availability-badge.full {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+}
+
+.detail-item .label {
+    color: #9ca3af;
+}
+
+.detail-item .value {
+    color: #e5e7eb;
+}
+
+/* BUTTONS */
+.reserve-btn {
+    background: #10a37f;
+    color: white;
+}
+
+.reserve-btn:hover:not(.disabled) {
+    background: #0e8d6b;
+    transform: translateY(-1px);
+}
+
+.reserve-btn.disabled {
+    background: #4b5563;
+    cursor: not-allowed;
+}
+
+.directions-btn {
+    background: transparent;
+    color: #10a37f;
+    border: 2px solid #10a37f;
+}
+
+.directions-btn:hover {
+    background: #10a37f;
+    color: white;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    .hero-content {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+        text-align: center;
+    }
+
+    .hero-heading {
+        font-size: 2.5rem;
+    }
+
+    .hero-actions {
+        justify-content: center;
+    }
+
+    .parking-grid-demo {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .stats-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .legend {
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-heading {
+        font-size: 2rem;
+    }
+
+    .stats-container {
+        grid-template-columns: 1fr;
+    }
+
+    .location-actions {
+        flex-direction: column;
+    }
+}
+
+</style>
+{% endblock %}

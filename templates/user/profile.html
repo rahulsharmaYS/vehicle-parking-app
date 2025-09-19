@@ -1,0 +1,488 @@
+{% extends "base.html" %}
+
+{% block title %}Profile - ParkSpace Pro{% endblock %}
+
+{% block content %}
+<div class="profile-page">
+    <div class="profile-container">
+        <div class="profile-header">
+            <div class="profile-info">
+                <div class="profile-avatar">
+                    <span>{{ session.user_name[0].upper() }}{{ session.user_name.split()[1][0].upper() if session.user_name.split()|length > 1 else '' }}</span>
+                </div>
+                <div class="profile-details">
+                    <h1>{{ session.user_name }}</h1>
+                    <p class="profile-subtitle">ParkSpace Pro Member</p>
+                    <div class="member-since">
+                        <span>Member since {{ user.created_at.strftime('%B %Y') }}</span>
+
+                    </div>
+                </div>
+            </div>
+            <div class="profile-actions">
+                <button class="edit-btn" onclick="toggleEditMode()">Edit Profile</button>
+                <a href="{{ url_for('user_dashboard') }}" class="dashboard-btn">Back to Dashboard</a>
+            </div>
+        </div>
+
+        <div class="profile-content">
+            <div class="profile-sidebar">
+                <nav class="profile-nav">
+                    <a href="#personal-info" class="nav-item active" onclick="showSection('personal-info')">
+                        <span class="nav-icon">👤</span>
+                        Personal Information
+                    </a>
+                </nav>
+            </div>
+
+            <div class="profile-main">
+                <div id="personal-info" class="section active">
+                    <div class="section-header">
+                        <h2>Personal Information</h2>
+                        <p>Manage your account details and contact information</p>
+                    </div>
+                    
+                    <form class="profile-form" method="POST">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="name">Full Name</label>
+                                <input type="text" id="name" name="name" value="{{ session.user_name }}" readonly>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="email">Email Address</label>
+                                <input type="email" id="email" name="email" value="{{ session.user_email }}" readonly>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="phone">Phone Number</label>
+                                <input type="tel" id="phone" name="phone" value="{{ session.user_phone }}" readonly>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="address">Address</label>
+                                <input type="text" id="address" name="address" value="{{ session.user_address }}" readonly>
+                            </div>
+                            
+                            <div class="form-group full-width">
+                                <label for="pincode">Pincode</label>
+                                <input type="text" id="pincode" name="pincode" value="{{ session.user_pincode }}" readonly>
+                            </div>
+                        </div>
+
+                        <!-- vehicle number -->
+                        <div class="form-group full-width">
+                            <label for="vehicle_number">Vehicle Number</label>
+                            <input type="text" id="vehicle_number" name="vehicle_number" value="{{ session.user_vehicle_number }}" readonly>
+                        </div>
+
+                        <div class="form-actions" style="display: none;">
+                            <button type="submit" class="save-btn">Save Changes</button>
+                            <button type="button" class="cancel-btn" onclick="toggleEditMode()">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+                        
+
+                    </div>
+                    
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+:root {
+    --bg-body: #1e1e2e;
+    --bg-panel: #2a2a40;
+    --bg-muted: #383855;
+    --border: #3c3c55;
+    --text-main: #ffffff;
+    --text-subtle: #a0a4b8;
+    --text-muted: #6c7284;
+    --accent: #10b981;
+    --primary: #6366f1;
+    --danger: #ef4444;
+    --radius: 12px;
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    --transition: all 0.25s ease;
+}
+
+/* Global Base */
+body {
+    background-color: var(--bg-body);
+    color: var(--text-main);
+    font-family: 'Segoe UI', sans-serif;
+}
+
+/* Layout */
+.profile-page {
+    background: var(--bg-body);
+    min-height: 100vh;
+    padding: 2rem 0;
+}
+
+.profile-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+}
+
+/* Header */
+.profile-header {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: var(--shadow);
+}
+
+/* Avatar */
+.profile-avatar {
+    width: 100px;
+    height: 100px;
+    background: var(--primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+}
+
+/* Text Info */
+.profile-details h1 {
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 0.3rem;
+}
+
+.profile-subtitle {
+    color: var(--primary);
+    font-weight: 500;
+}
+
+.member-since {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+/* Buttons */
+.profile-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.edit-btn,
+.dashboard-btn {
+    padding: 0.7rem 1.4rem;
+    border-radius: var(--radius);
+    font-weight: 600;
+    text-decoration: none;
+    transition: var(--transition);
+    cursor: pointer;
+    border: none;
+}
+
+.edit-btn {
+    background: var(--primary);
+    color: #fff;
+}
+
+.edit-btn:hover {
+    background: #5856eb;
+    transform: scale(1.02);
+}
+
+.dashboard-btn {
+    background: transparent;
+    color: var(--primary);
+    border: 2px solid var(--primary);
+}
+
+.dashboard-btn:hover {
+    background: var(--primary);
+    color: #fff;
+}
+
+/* Main Layout */
+.profile-content {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 2rem;
+}
+
+/* Sidebar */
+.profile-sidebar {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.5rem;
+}
+
+.profile-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.9rem 1rem;
+    color: var(--text-subtle);
+    border-radius: var(--radius);
+    transition: var(--transition);
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.nav-item:hover,
+.nav-item.active {
+    background: var(--primary);
+    color: #fff;
+}
+
+.nav-icon {
+    font-size: 1.2rem;
+}
+
+/* Main Content */
+.profile-main {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2rem;
+}
+
+.section-header h2 {
+    font-size: 1.75rem;
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+    color: var(--text-main);
+}
+
+.section-header p {
+    color: var(--text-muted);
+}
+
+/* Form Styles */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.form-group label {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--text-main);
+}
+
+.form-group input {
+    padding: 0.7rem 1rem;
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-muted);
+    color: var(--text-main);
+    transition: var(--transition);
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.3);
+}
+
+.form-group input[readonly] {
+    background: rgba(60, 60, 80, 0.4);
+    cursor: not-allowed;
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.save-btn {
+    background: var(--accent);
+    color: #fff;
+}
+
+.save-btn:hover {
+    background: #059669;
+}
+
+.cancel-btn {
+    background: transparent;
+    color: var(--danger);
+    border: 2px solid var(--danger);
+}
+
+.cancel-btn:hover {
+    background: var(--danger);
+    color: #fff;
+}
+
+/* Cards and Sections */
+.vehicle-card,
+.stat-card,
+.history-item,
+.payment-card {
+    background: var(--bg-muted);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.vehicle-number {
+    color: var(--primary);
+    font-family: monospace;
+    font-weight: 600;
+}
+
+/* Stats */
+.stat-number {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--primary);
+}
+
+.stat-label {
+    color: var(--text-muted);
+    text-transform: uppercase;
+    font-size: 0.75rem;
+}
+
+/* Switch / Toggle */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--border);
+    transition: 0.4s;
+    border-radius: 24px;
+}
+
+.slider:before {
+    content: "";
+    position: absolute;
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: #fff;
+    border-radius: 50%;
+    transition: 0.4s;
+}
+
+input:checked + .slider {
+    background-color: var(--primary);
+}
+
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .profile-header {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .profile-content {
+        grid-template-columns: 1fr;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .profile-nav {
+        flex-direction: row;
+        overflow-x: auto;
+    }
+
+    .nav-item {
+        white-space: nowrap;
+    }
+}
+</style>
+
+<script>
+function showSection(sectionId) {
+    // Hide all sections
+    const sections = document.querySelectorAll('.section');
+    sections.forEach(section => section.classList.remove('active'));
+    
+    // Show selected section
+    document.getElementById(sectionId).classList.add('active');
+    
+    // Update navigation
+    const navItems = document.querySelectorAll('.nav-item');
+    navItems.forEach(item => item.classList.remove('active'));
+    document.querySelector(`[onclick="showSection('${sectionId}')"]`).classList.add('active');
+}
+
+function toggleEditMode() {
+    const inputs = document.querySelectorAll('.profile-form input');
+    const formActions = document.querySelector('.form-actions');
+    const editBtn = document.querySelector('.edit-btn');
+    
+    const isReadonly = inputs[0].hasAttribute('readonly');
+    
+    inputs.forEach(input => {
+        if (isReadonly) {
+            input.removeAttribute('readonly');
+            input.style.background = 'rgba(45, 53, 97, 0.6)';
+        } else {
+            input.setAttribute('readonly', true);
+            input.style.background = 'rgba(45, 53, 97, 0.3)';
+        }
+    });
+    
+    if (isReadonly) {
+        formActions.style.display = 'flex';
+        editBtn.textContent = 'Cancel Edit';
+        editBtn.style.background = '#ef4444';
+    } else {
+        formActions.style.display = 'none';
+        editBtn.textContent = 'Edit Profile';
+        editBtn.style.background = '#6366f1';
+    }
+}
+
+// Initialize page
+document.addEventListener('DOMContentLoaded', function() {
+    showSection('personal-info');
+});
+</script>
+{% endblock %}
